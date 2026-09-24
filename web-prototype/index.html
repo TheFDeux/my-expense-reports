@@ -231,6 +231,9 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
 .row a { color: var(--tint); text-decoration: none; }
 .pill { font-size: 13px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--fill); color: var(--label2); white-space: nowrap; }
 .pill.on { color: var(--tint); background: color-mix(in srgb, var(--tint) 16%, transparent); }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px; margin: 8px 12px; border-radius: 9px; background: var(--fill); }
+.seg button { min-height: 36px; border-radius: 7px; font-size: 15px; color: var(--label); transition: background 0.2s, box-shadow 0.2s; }
+.seg button[aria-checked="true"] { background: var(--cell); font-weight: 600; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.04); }
 .savebtn { color: var(--tint); font-weight: 600; min-height: 44px; padding: 0 4px; white-space: nowrap; }
 .csvbox { width: 100%; min-height: 160px; font: 12px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace; padding: 12px 16px; }
 
@@ -413,6 +416,27 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     const region = (LANG.split("-")[1] || "").toUpperCase();
     return REGION_CURRENCY[region] || "EUR";
   }
+
+  // ---------- appearance: System follows claude.ai / the phone; Light and Dark pin this page ----------
+  const root = document.documentElement;
+  let hostTheme = root.getAttribute("data-theme");   // what the viewer stamped, if anything
+  let lastApplied = hostTheme;
+  let themeChoice = safeGet("mer.theme");            // kept in memory too, in case storage is refused
+  const themePref = () => (themeChoice === "light" || themeChoice === "dark" ? themeChoice : "system");
+  function applyTheme() {
+    const pref = themePref();
+    const want = pref === "system" ? hostTheme : pref;
+    lastApplied = want;
+    if (want) root.setAttribute("data-theme", want); else root.removeAttribute("data-theme");
+  }
+  // The viewer may re-stamp the theme when claude.ai's appearance changes: remember its choice, then re-apply ours.
+  new MutationObserver(() => {
+    const now = root.getAttribute("data-theme");
+    if (now === lastApplied) return;
+    hostTheme = now;
+    applyTheme();
+  }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  applyTheme();
 
   // ---------- money (integer cents; never floating-point arithmetic on amounts) ----------
   const fmtCache = new Map();
@@ -1025,7 +1049,12 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
       memory: ["Not saved", "This browser won't store data here, so expenses last until you close the page."],
       pending: ["Connecting…", ""],
     }[state.storage];
+    const pref = themePref();
+    const segBtn = (value, label) => `<button type="button" role="radio" aria-checked="${pref === value}" data-theme-choice="${value}">${label}</button>`;
     $("settingsBody").innerHTML = `
+      <p class="group-label">Appearance</p>
+      <div class="group"><div class="seg" role="radiogroup" aria-label="Appearance">${segBtn("system", "System")}${segBtn("light", "Light")}${segBtn("dark", "Dark")}</div></div>
+      <p class="foot">System follows your claude.ai appearance and your iPhone. Light and Dark apply to this page only and are remembered in this browser.</p>
       <p class="group-label">Receipt reading</p>
       <div class="group">
         <div class="row"><span class="grow">Read photos with Claude</span>${readingPill}</div>
@@ -1207,6 +1236,21 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
           navigator.clipboard.writeText(text).then(() => toast("CSV copied"), fallback);
         } catch { fallback(); }
       }
+    });
+
+    // Appearance switch.
+    $("settingsBody").addEventListener("click", (ev) => {
+      const b = ev.target.closest("[data-theme-choice]");
+      if (!b) return;
+      const choice = b.dataset.themeChoice;
+      themeChoice = choice;
+      if (choice === "system") {
+        try { localStorage.removeItem("mer.theme"); } catch { /* nothing stored to clear */ }
+      } else if (!safeSet("mer.theme", choice)) {
+        toast("This browser won't remember the choice, so it lasts until you close the page.");
+      }
+      applyTheme();
+      document.querySelectorAll("[data-theme-choice]").forEach((x) => x.setAttribute("aria-checked", String(x === b)));
     });
 
     // "Why?" links anywhere open Settings.
