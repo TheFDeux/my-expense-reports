@@ -1,0 +1,1240 @@
+<title>My Expense Reports</title>
+<style>
+:root {
+  --bg: #F3F1EE;
+  --cell: #FFFFFF;
+  --cell-press: #ECE7E1;
+  --label: #1B1712;
+  --label2: rgba(60, 50, 40, 0.64);
+  --label3: rgba(60, 50, 40, 0.38);
+  --sep: rgba(60, 50, 40, 0.15);
+  --fill: rgba(120, 105, 90, 0.12);
+  --tint: #A65C1A;
+  --tint-fill: #A65C1A;
+  --on-tint: #FFFFFF;
+  --danger: #C9302A;
+  --warn: #9A6A12;
+  --sheet: #F3F1EE;
+  --scrim: rgba(28, 20, 12, 0.34);
+  --bar: rgba(243, 241, 238, 0.84);
+  --shadow: 0 6px 18px rgba(60, 35, 10, 0.22), 0 1px 3px rgba(60, 35, 10, 0.18);
+  --c-meals: #E0352B; --c-travel: #0A6FE0; --c-transport: #5552D1; --c-lodging: #9E45CF;
+  --c-office: #1F97AD; --c-software: #00A89F; --c-equipment: #2690CC; --c-telecom: #2A9E47;
+  --c-services: #E0284E; --c-other: #7C7C83;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0C0B0A; --cell: #1D1B19; --cell-press: #2A2724;
+    --label: #F4EFE9; --label2: rgba(236, 226, 214, 0.64); --label3: rgba(236, 226, 214, 0.36);
+    --sep: rgba(236, 226, 214, 0.13); --fill: rgba(236, 226, 214, 0.1);
+    --tint: #D98B45; --tint-fill: #B96A26; --on-tint: #FFFFFF;
+    --danger: #FF6259; --warn: #E3AC45; --sheet: #151311;
+    --scrim: rgba(0, 0, 0, 0.55); --bar: rgba(12, 11, 10, 0.82);
+    --shadow: 0 6px 18px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+    --c-meals: #FF5A4F; --c-travel: #3D95FF; --c-transport: #7D7AF0; --c-lodging: #C174F0;
+    --c-office: #45C3DA; --c-software: #2ED9CF; --c-equipment: #5AC0F2; --c-telecom: #45D46A;
+    --c-services: #FF5577; --c-other: #9C9CA3;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0C0B0A; --cell: #1D1B19; --cell-press: #2A2724;
+  --label: #F4EFE9; --label2: rgba(236, 226, 214, 0.64); --label3: rgba(236, 226, 214, 0.36);
+  --sep: rgba(236, 226, 214, 0.13); --fill: rgba(236, 226, 214, 0.1);
+  --tint: #D98B45; --tint-fill: #B96A26; --on-tint: #FFFFFF;
+  --danger: #FF6259; --warn: #E3AC45; --sheet: #151311;
+  --scrim: rgba(0, 0, 0, 0.55); --bar: rgba(12, 11, 10, 0.82);
+  --shadow: 0 6px 18px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+  --c-meals: #FF5A4F; --c-travel: #3D95FF; --c-transport: #7D7AF0; --c-lodging: #C174F0;
+  --c-office: #45C3DA; --c-software: #2ED9CF; --c-equipment: #5AC0F2; --c-telecom: #45D46A;
+  --c-services: #FF5577; --c-other: #9C9CA3;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bg); }
+body {
+  color: var(--label);
+  font: 17px/1.3 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  padding-inline: 16px;
+}
+::selection { background: color-mix(in srgb, var(--tint) 30%, transparent); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { background: none; border: 0; padding: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--tint); outline-offset: 2px; border-radius: 6px; }
+.vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.num { font-variant-numeric: tabular-nums; }
+.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+.app { max-width: 640px; margin: 0 auto; padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
+
+/* Navigation bar with the compact title that appears once the large title scrolls away */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  height: 48px; margin-inline: -16px; padding-inline: 8px;
+  background: var(--bar);
+  -webkit-backdrop-filter: saturate(1.6) blur(18px); backdrop-filter: saturate(1.6) blur(18px);
+  border-bottom: 0.5px solid transparent; transition: border-color 0.2s;
+}
+.bar.scrolled { border-bottom-color: var(--sep); }
+.bar-title { grid-column: 2; font-weight: 600; font-size: 17px; opacity: 0; transition: opacity 0.2s; }
+.bar.scrolled .bar-title { opacity: 1; }
+.bar-actions { grid-column: 3; justify-self: end; display: flex; }
+.iconbtn { width: 44px; height: 44px; display: grid; place-items: center; color: var(--tint); font-size: 22px; border-radius: 22px; }
+.iconbtn:disabled { color: var(--label3); cursor: default; }
+.iconbtn:not(:disabled):active { background: var(--fill); }
+
+.large { padding: 2px 4px 10px; }
+.large h1 { margin: 0; font-size: 34px; line-height: 41px; font-weight: 700; letter-spacing: 0.01em; }
+.notice {
+  margin: 10px 0 0; display: flex; gap: 10px; align-items: flex-start;
+  font-size: 15px; line-height: 20px; color: var(--label2);
+}
+.notice .ic { font-size: 18px; margin-top: 1px; color: var(--label2); }
+.notice button { color: var(--tint); font-weight: 600; font-size: 15px; }
+
+.banner {
+  margin: 4px 0 18px; padding: 14px 16px; border-radius: 12px; background: var(--cell);
+  font-size: 15px; line-height: 20px; color: var(--label2);
+}
+.banner strong { display: block; color: var(--label); font-size: 17px; margin-bottom: 2px; }
+
+/* The accordion file: one pocket per month, the header is its tab */
+.pocket { margin-bottom: 26px; }
+.tab { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 0 4px 8px; }
+.tab h2 { margin: 0; font-size: 17px; font-weight: 600; line-height: 22px; }
+.tab p { margin: 1px 0 0; font-size: 13px; color: var(--label2); }
+.total { font-size: 22px; line-height: 28px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.total.multi { font-size: 17px; }
+.card { list-style: none; margin: 0; padding: 0; background: var(--cell); border-radius: 12px; overflow: hidden; }
+.card li + li .slip-text { border-top: 0.5px solid var(--sep); }
+.slip {
+  width: 100%; display: flex; align-items: center; gap: 12px; text-align: left;
+  padding-left: 16px; min-height: 64px; transition: background 0.15s;
+}
+.slip:active { background: var(--cell-press); }
+.slip-text { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; align-self: stretch; padding: 10px 16px 10px 0; }
+.slip-main { flex: 1; min-width: 0; }
+.merchant { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta { display: flex; align-items: center; gap: 5px; margin-top: 2px; font-size: 13px; color: var(--label2); white-space: nowrap; overflow: hidden; }
+.meta .ic { font-size: 12px; }
+.amount { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.thumb { width: 44px; height: 44px; border-radius: 8px; flex: none; object-fit: cover; display: grid; place-items: center; font-size: 20px; }
+.chip-example { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--label3); border: 1px solid var(--sep); border-radius: 5px; padding: 1px 5px; margin-left: 4px; }
+.empty-row { padding: 14px 16px; color: var(--label2); }
+@keyframes arrive { from { transform: translateY(-8px); opacity: 0; background: color-mix(in srgb, var(--tint) 14%, var(--cell)); } to { transform: none; opacity: 1; } }
+.arrive { animation: arrive 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2); }
+
+/* Primary action, bottom-trailing in thumb reach */
+.fab {
+  position: fixed; z-index: 6;
+  right: max(20px, calc((100vw - 640px) / 2 + 20px));
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  width: 58px; height: 58px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 26px;
+  color: var(--on-tint); background: var(--tint-fill); box-shadow: var(--shadow);
+  transition: transform 0.15s;
+}
+.fab .ic { stroke-width: 2.6; }
+.fab:active { transform: scale(0.94); }
+
+/* Sheets */
+.scrim { position: fixed; inset: 0; z-index: 20; background: var(--scrim); opacity: 0; transition: opacity 0.3s; }
+.scrim.on { opacity: 1; }
+.sheet {
+  position: fixed; z-index: 21; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 640px;
+  max-height: calc(100% - 40px - env(safe-area-inset-top, 0px));
+  display: flex; flex-direction: column;
+  background: var(--sheet); border-radius: 14px 14px 0 0;
+  transform: translateY(105%); transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.12);
+}
+.sheet.tall { height: calc(100% - 40px - env(safe-area-inset-top, 0px)); }
+.sheet.on { transform: none; }
+.grabber { width: 36px; height: 5px; border-radius: 3px; background: var(--label3); margin: 6px auto 0; flex: none; }
+.sheet-head { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 52px; padding: 0 8px; flex: none; }
+.sheet-head h2 { grid-column: 2; margin: 0; font-size: 17px; font-weight: 600; }
+.sheet-head .left { justify-self: start; }
+.sheet-head .right { grid-column: 3; justify-self: end; }
+.txtbtn { color: var(--tint); min-height: 44px; padding: 0 8px; }
+.txtbtn.strong { font-weight: 600; }
+.txtbtn:disabled { color: var(--label3); cursor: default; }
+.sheet-body { overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 4px 16px calc(28px + env(safe-area-inset-bottom, 0px)); flex: 1; }
+.group-label { margin: 22px 16px 7px; font-size: 13px; color: var(--label2); text-transform: uppercase; letter-spacing: 0.03em; }
+.group { background: var(--cell); border-radius: 12px; overflow: hidden; }
+.group + .group { margin-top: 22px; }
+.foot { margin: 8px 16px 0; font-size: 13px; line-height: 18px; color: var(--label2); }
+.field { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 16px; }
+.field + .field { border-top: 0.5px solid var(--sep); }
+.field > span:first-child { flex: none; }
+.field input, .field select {
+  flex: 1; min-width: 0; border: 0; background: none; text-align: right; outline: none;
+  height: 46px; padding: 0; color: var(--label); -webkit-appearance: none; appearance: none;
+}
+.field input::placeholder, textarea::placeholder { color: var(--label3); }
+.field select { color: var(--label2); cursor: pointer; text-align-last: right; }
+.field input[type="date"] { color: var(--label2); min-height: 46px; }
+.field input.money { font-variant-numeric: tabular-nums; }
+.field .catglyph { font-size: 20px; display: grid; place-items: center; }
+.field .chev { color: var(--label3); font-size: 14px; margin-left: -6px; }
+.field.invalid input { color: var(--danger); }
+textarea { display: block; width: 100%; border: 0; background: none; outline: none; resize: none; padding: 13px 16px; min-height: 76px; line-height: 22px; }
+.rowbtn { width: 100%; min-height: 48px; font-size: 17px; }
+.rowbtn.danger { color: var(--danger); }
+.rowbtn.tint { color: var(--tint); }
+.receipt { display: block; width: 100%; height: 188px; position: relative; overflow: hidden; }
+.receipt img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.receipt .expand {
+  position: absolute; right: 10px; bottom: 10px; width: 30px; height: 30px; border-radius: 8px;
+  display: grid; place-items: center; font-size: 14px; color: #fff; background: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.status { display: flex; gap: 12px; align-items: flex-start; padding: 13px 16px; border-top: 0.5px solid var(--sep); }
+.status:first-child { border-top: 0; }
+.status .ic, .status .spin { font-size: 20px; margin-top: 1px; flex: none; }
+.status b { display: block; font-size: 15px; font-weight: 600; }
+.status p { margin: 2px 0 0; font-size: 13px; line-height: 18px; color: var(--label2); }
+.status button { margin-top: 6px; color: var(--tint); font-size: 13px; font-weight: 600; min-height: 32px; }
+.status .actions { display: flex; gap: 18px; }
+.spin { width: 20px; height: 20px; border-radius: 50%; border: 2.5px solid var(--fill); border-top-color: var(--label2); animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.discard { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 16px 8px; padding: 10px 14px; border-radius: 12px; background: var(--cell); font-size: 15px; }
+.discard span { flex: 1 1 140px; }
+.discard button { min-height: 36px; padding: 0 6px; color: var(--tint); font-weight: 600; font-size: 15px; }
+.discard button.danger { color: var(--danger); }
+
+/* Action sheet */
+.actions-sheet {
+  position: fixed; z-index: 21; left: 8px; right: 8px; margin: 0 auto; max-width: 560px;
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  transform: translateY(calc(100% + 30px)); transition: transform 0.34s cubic-bezier(0.32, 0.72, 0, 1);
+  display: grid; gap: 8px;
+}
+.actions-sheet.on { transform: none; }
+.as-group { background: var(--cell); border-radius: 14px; overflow: hidden; }
+.as-head { padding: 14px 18px 12px; text-align: center; font-size: 13px; color: var(--label2); border-bottom: 0.5px solid var(--sep); }
+.as-head strong { display: block; font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.as-head p { margin: 0; line-height: 17px; }
+.as-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 57px; font-size: 19px; color: var(--tint); cursor: pointer; }
+.as-group .as-btn + .as-btn { border-top: 0.5px solid var(--sep); }
+.as-btn:active { background: var(--cell-press); }
+.as-cancel { background: var(--cell); border-radius: 14px; font-weight: 600; }
+
+/* Settings and export rows */
+.row { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 10px 16px; }
+.row + .row { border-top: 0.5px solid var(--sep); }
+.row .grow { flex: 1; min-width: 0; }
+.row .sub { display: block; font-size: 13px; color: var(--label2); margin-top: 2px; }
+.row .val { color: var(--label2); text-align: right; }
+.row a { color: var(--tint); text-decoration: none; }
+.pill { font-size: 13px; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--fill); color: var(--label2); white-space: nowrap; }
+.pill.on { color: var(--tint); background: color-mix(in srgb, var(--tint) 16%, transparent); }
+.savebtn { color: var(--tint); font-weight: 600; min-height: 44px; padding: 0 4px; white-space: nowrap; }
+.csvbox { width: 100%; min-height: 160px; font: 12px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace; padding: 12px 16px; }
+
+/* Receipt viewer */
+.viewer { position: fixed; inset: 0; z-index: 30; background: #000; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.25s; }
+.viewer.on { opacity: 1; }
+.viewer-head { display: flex; justify-content: flex-end; padding: calc(6px + env(safe-area-inset-top, 0px)) 8px 6px; }
+.viewer-head button { color: #F2B774; font-weight: 600; min-height: 44px; padding: 0 12px; }
+.viewer-body { flex: 1; overflow: auto; display: grid; place-items: center; }
+.viewer-body img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: zoom-in; }
+.viewer-body.zoom { place-items: start; }
+.viewer-body.zoom img { max-width: none; max-height: none; width: 240%; cursor: zoom-out; }
+
+.toast {
+  position: fixed; z-index: 40; left: 50%; bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  transform: translate(-50%, 12px); opacity: 0; transition: opacity 0.2s, transform 0.2s;
+  max-width: min(92vw, 420px); padding: 11px 16px; border-radius: 12px;
+  background: var(--label); color: var(--bg); font-size: 15px; line-height: 20px; box-shadow: var(--shadow);
+  pointer-events: none;
+}
+.toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .actions-sheet { transition: opacity 0.2s; transform: none; opacity: 0; pointer-events: none; }
+  .sheet.on, .actions-sheet.on { opacity: 1; pointer-events: auto; }
+  .arrive { animation: none; }
+  .spin { animation-duration: 2.4s; }
+}
+</style>
+
+<div class="app">
+  <nav class="bar" id="bar">
+    <span class="bar-title" aria-hidden="true">Expenses</span>
+    <div class="bar-actions">
+      <button class="iconbtn" id="exportBtn" type="button" aria-label="Export CSV"></button>
+      <button class="iconbtn" id="settingsBtn" type="button" aria-label="Settings"></button>
+    </div>
+  </nav>
+  <header class="large">
+    <h1 id="largeTitle">Expenses</h1>
+    <p class="notice" id="notice" hidden></p>
+  </header>
+  <div id="banner"></div>
+  <main id="list" aria-live="polite"></main>
+</div>
+
+<button class="fab" id="addBtn" type="button" aria-label="Add expense"></button>
+
+<input class="vh" type="file" id="camInput" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true">
+<input class="vh" type="file" id="libInput" accept="image/*" tabindex="-1" aria-hidden="true">
+
+<div class="scrim" id="scrim" hidden></div>
+
+<div class="actions-sheet" id="addSheet" role="dialog" aria-modal="true" aria-labelledby="addTitle" hidden>
+  <div class="as-group">
+    <div class="as-head"><strong id="addTitle">Add an expense</strong><p id="addMsg"></p></div>
+    <label class="as-btn" for="camInput" id="camLabel" tabindex="0"></label>
+    <label class="as-btn" for="libInput" id="libLabel" tabindex="0"></label>
+    <button class="as-btn" type="button" id="manualBtn"></button>
+  </div>
+  <button class="as-btn as-cancel" type="button" id="addCancel">Cancel</button>
+</div>
+
+<div class="sheet tall" id="formSheet" role="dialog" aria-modal="true" aria-labelledby="formTitle" hidden>
+  <div class="grabber"></div>
+  <div class="sheet-head">
+    <button class="txtbtn left" type="button" id="formCancel">Cancel</button>
+    <h2 id="formTitle">New Expense</h2>
+    <button class="txtbtn strong right" type="button" id="formSave" disabled>Save</button>
+  </div>
+  <div class="discard" id="discardBar" hidden>
+    <span>Discard this expense?</span>
+    <button type="button" id="keepEditing">Keep Editing</button>
+    <button type="button" class="danger" id="discardBtn">Discard</button>
+  </div>
+  <div class="sheet-body">
+    <div class="group" id="receiptGroup" hidden>
+      <button class="receipt" type="button" id="receiptBtn" aria-label="Receipt photo, tap to enlarge"><img id="receiptImg" alt=""><span class="expand" id="expandIc"></span></button>
+      <div class="status" id="readStatus" aria-live="polite"></div>
+    </div>
+    <p class="group-label">Details</p>
+    <div class="group">
+      <label class="field"><span>Merchant</span><input id="fMerchant" autocomplete="organization" autocapitalize="words" placeholder="Required for your records"></label>
+      <label class="field" id="totalField"><span>Total incl. VAT</span><input id="fTotal" class="money" inputmode="decimal" autocomplete="off" placeholder="0.00"></label>
+      <label class="field"><span>VAT</span><input id="fVat" class="money" inputmode="decimal" autocomplete="off" placeholder="Optional"></label>
+      <label class="field"><span>Currency</span><select id="fCurrency"></select></label>
+      <label class="field"><span>Date</span><input id="fDate" type="date"></label>
+    </div>
+    <p class="group-label">Category</p>
+    <div class="group">
+      <label class="field"><span class="catglyph" id="catGlyph"></span><select id="fCategory" aria-label="Category"></select></label>
+    </div>
+    <p class="group-label">Note</p>
+    <div class="group"><textarea id="fNote" rows="2" placeholder="Client, project, who was there…" aria-label="Note"></textarea></div>
+    <p class="foot" id="formFoot" hidden>Check each field against the receipt before saving.</p>
+    <div class="group" id="deleteGroup" hidden style="margin-top:28px"><button class="rowbtn danger" type="button" id="deleteBtn">Delete Expense</button></div>
+  </div>
+</div>
+
+<div class="sheet" id="settingsSheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle" hidden>
+  <div class="grabber"></div>
+  <div class="sheet-head">
+    <h2 id="settingsTitle">Settings</h2>
+    <button class="txtbtn strong right" type="button" data-close>Done</button>
+  </div>
+  <div class="sheet-body" id="settingsBody"></div>
+</div>
+
+<div class="sheet" id="exportSheet" role="dialog" aria-modal="true" aria-labelledby="exportTitle" hidden>
+  <div class="grabber"></div>
+  <div class="sheet-head">
+    <h2 id="exportTitle">Export CSV</h2>
+    <button class="txtbtn strong right" type="button" data-close>Done</button>
+  </div>
+  <div class="sheet-body" id="exportBody"></div>
+</div>
+
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Receipt photo" hidden>
+  <div class="viewer-head"><button type="button" id="viewerDone">Done</button></div>
+  <div class="viewer-body" id="viewerBody"><img id="viewerImg" alt="Receipt"></div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  // ---------- constants ----------
+  const LANG = navigator.language || "en-US";
+  const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const TOUCH = matchMedia("(pointer: coarse)").matches;
+  const $ = (id) => document.getElementById(id);
+
+  const ICON = {
+    plus: "M12 5v14M5 12h14",
+    share: "M12 3v12M8 7l4-4 4 4M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7",
+    gear: "M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM19.4 13.5a7.7 7.7 0 0 0 0-3l2-1.6-2-3.4-2.4.9a7.6 7.6 0 0 0-2.6-1.5L14 2.5h-4l-.4 2.4A7.6 7.6 0 0 0 7 6.4l-2.4-.9-2 3.4 2 1.6a7.7 7.7 0 0 0 0 3l-2 1.6 2 3.4 2.4-.9a7.6 7.6 0 0 0 2.6 1.5l.4 2.4h4l.4-2.4a7.6 7.6 0 0 0 2.6-1.5l2.4.9 2-3.4z",
+    camera: "M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z",
+    photo: "M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM3 16l5-5 4 4 3-3 6 6M15.5 9.5h.01",
+    pencil: "M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4",
+    sparkles: "M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z",
+    warn: "M12 3l10 18H2zM12 10v5M12 18h.01",
+    keyoff: "M15 7.5a3 3 0 1 1-2.1 5.1L6 19.5H3.5V17l1.5-1.5h1.5V14h1.5l1.9-1.9M3 3l18 18",
+    expand: "M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7",
+    chevron: "M9 6l6 6-6 6",
+    receipt: "M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21zM9 8h6M9 12h6M9 16h3",
+    meals: "M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.2 0-3.5 2.6-3.5 6.5V13H17",
+    travel: "M3 13.5l18-9-6.5 16.5-3-7.5z",
+    transport: "M5 17h14M6.5 17v2.5M17.5 17v2.5M4 17v-5l2.2-5h11.6L20 12v5M4 12h16M7.5 14.5h.01M16.5 14.5h.01",
+    lodging: "M3 19V6M3 14h18v5M21 14a3 3 0 0 0-3-3h-7v3M7 12a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z",
+    office: "M20 11.5l-8.2 8.2a5 5 0 0 1-7-7L13.3 4a3.4 3.4 0 0 1 4.8 4.8L9.6 17.3a1.8 1.8 0 0 1-2.6-2.6L15 6.8",
+    software: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 16.5h7M16.5 13v7",
+    equipment: "M3 5h18v11H3zM9 20h6M12 16v4",
+    telecom: "M8 3h8a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM11 18h2",
+    services: "M3 8h18v11H3zM9 8V5h6v3M3 13h18",
+    other: "M3 12V4h8l10 10-8 8zM7.5 7.5h.01",
+  };
+  const svg = (name) => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON[name]}"/></svg>`;
+
+  // Fixed category law: the same names as the iOS app, the CSV and the reading prompt.
+  const CATS = [
+    ["Meals", "meals"], ["Travel", "travel"], ["Transport", "transport"], ["Lodging", "lodging"],
+    ["Office", "office"], ["Software", "software"], ["Equipment", "equipment"], ["Telecom", "telecom"],
+    ["Professional services", "services"], ["Other", "other"],
+  ].map(([id, key]) => ({ id, key, color: `var(--c-${key})` }));
+  const CAT = Object.fromEntries(CATS.map((c) => [c.id, c]));
+  const catOf = (id) => CAT[id] || CAT.Other;
+
+  const CURRENCIES = ["EUR", "USD", "GBP", "CHF", "CAD", "JPY", "AUD", "SEK", "NOK", "DKK"];
+  const REGION_CURRENCY = { US: "USD", GB: "GBP", CH: "CHF", CA: "CAD", JP: "JPY", AU: "AUD", SE: "SEK", NO: "NOK", DK: "DKK" };
+
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const safeGet = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+  const safeSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch { return false; } };
+
+  function defaultCurrency() {
+    const remembered = safeGet("mer.currency");
+    if (remembered && /^[A-Z]{3}$/.test(remembered)) return remembered;
+    const region = (LANG.split("-")[1] || "").toUpperCase();
+    return REGION_CURRENCY[region] || "EUR";
+  }
+
+  // ---------- money (integer cents; never floating-point arithmetic on amounts) ----------
+  const fmtCache = new Map();
+  const Money = {
+    parse(text) {
+      let s = String(text ?? "").replace(/[\s  ]/g, "").replace(/[^0-9,.\-]/g, "");
+      if (!/\d/.test(s)) return null;
+      const lc = s.lastIndexOf(","), ld = s.lastIndexOf(".");
+      if (lc > -1 && ld > -1) {
+        // Whichever separator comes last is the decimal one; the other is grouping.
+        s = lc > ld ? s.replace(/\./g, "").replace(",", ".") : s.replace(/,/g, "");
+      } else {
+        const sep = lc > -1 ? "," : ld > -1 ? "." : null;
+        if (sep) s = s.split(sep).length > 2 ? s.split(sep).join("") : s.replace(sep, ".");
+      }
+      const m = /^(-?)(\d*)(?:\.(\d*))?$/.exec(s);
+      if (!m || (!m[2] && !m[3])) return null;
+      const frac = m[3] || "";
+      let cents = parseInt(m[2] || "0", 10) * 100 + parseInt((frac + "00").slice(0, 2), 10);
+      if (frac.length > 2 && +frac[2] >= 5) cents += 1;
+      return m[1] ? -cents : cents;
+    },
+    plain(c) {
+      const neg = c < 0; c = Math.abs(c);
+      return (neg ? "-" : "") + Math.floor(c / 100) + "." + String(c % 100).padStart(2, "0");
+    },
+    fmt(c, code) {
+      let f = fmtCache.get(code);
+      if (!f) {
+        try { f = new Intl.NumberFormat(LANG, { style: "currency", currency: code }); } catch { f = null; }
+        fmtCache.set(code, f);
+      }
+      return f ? f.format(c / 100) : Money.plain(c) + " " + code;
+    },
+  };
+
+  // ---------- dates (stored as local YYYY-MM-DD) ----------
+  const pad = (n) => String(n).padStart(2, "0");
+  const isoDate = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const today = () => isoDate(new Date());
+  const toDate = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d || 1); };
+  const dayFmt = new Intl.DateTimeFormat(LANG, { day: "numeric", month: "short" });
+  const monthFmt = new Intl.DateTimeFormat(LANG, { month: "long", year: "numeric" });
+  const monthTitle = (key) => { const t = monthFmt.format(toDate(key + "-01")); return t.charAt(0).toUpperCase() + t.slice(1); };
+  const receipts = (n) => `${n} ${n === 1 ? "receipt" : "receipts"}`;
+  const newId = () => "e" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+
+  // ---------- state ----------
+  const state = {
+    expenses: [],
+    loaded: false,
+    storage: "pending",      // pending | db | local | memory
+    reading: "checking",     // checking | ready | off
+    readingReason: "",
+    justAdded: null,
+  };
+  let store = null;
+  let sampleFn = null;
+  let downloadsNs = null;
+  let readingReady;
+  const readingReadyPromise = new Promise((r) => (readingReady = r));
+
+  // Example receipts: shown only while the ledger is empty, never saved, never exported.
+  function examples() {
+    const now = new Date();
+    const d = (monthsBack, day) => {
+      const x = new Date(now.getFullYear(), now.getMonth() - monthsBack, 1);
+      const last = new Date(x.getFullYear(), x.getMonth() + 1, 0).getDate();
+      x.setDate(Math.min(day, monthsBack === 0 ? now.getDate() : last, last));
+      return isoDate(x);
+    };
+    const cur = defaultCurrency();
+    return [
+      { id: "x1", example: true, merchant: "Boulangerie Martin", amountCents: 840, vatCents: 44, currency: cur, date: d(0, 22), category: "Meals" },
+      { id: "x2", example: true, merchant: "SNCF", amountCents: 8900, vatCents: 809, currency: cur, date: d(0, 12), category: "Transport" },
+      { id: "x3", example: true, merchant: "Figma", amountCents: 1500, vatCents: 250, currency: cur, date: d(0, 3), category: "Software" },
+      { id: "x4", example: true, merchant: "Hôtel du Parc", amountCents: 14200, vatCents: 1291, currency: cur, date: d(1, 18), category: "Lodging" },
+      { id: "x5", example: true, merchant: "Orange", amountCents: 3999, vatCents: 667, currency: cur, date: d(1, 6), category: "Telecom" },
+    ];
+  }
+  const showingExamples = () => state.expenses.length === 0;
+  const visible = () => (showingExamples() ? examples() : state.expenses);
+
+  // ---------- storage: private per-viewer db, else this browser ----------
+  async function initStorage() {
+    const c = window.claude;
+    let db = null, userNs = null;
+    if (c && typeof c.use === "function") {
+      [db, userNs] = await Promise.all([c.use("db").catch(() => null), c.use("user").catch(() => null)]);
+    }
+    const uid = userNs ? await userNs.id() : null;
+    if (db && uid) {
+      let col;
+      try { col = db.collection("data/users/" + uid); } catch { col = null; }
+      if (col) {
+        state.storage = "db";
+        store = {
+          save: (e) => col.doc(e.id).set(toDoc(e)),
+          remove: (id) => col.doc(id).delete(),
+        };
+        col.onSnapshot(
+          (snap) => {
+            state.expenses = snap.docs.map((d) => fromDoc(d.id, d.data())).filter(Boolean);
+            state.loaded = true;
+            render();
+          },
+          () => { useLocal("Your private store stopped responding, so changes are kept in this browser for now."); }
+        );
+        return;
+      }
+    }
+    useLocal();
+  }
+
+  function useLocal(message) {
+    const raw = safeGet("mer.expenses.v1");
+    let list = [];
+    try { list = raw ? JSON.parse(raw) : []; } catch { list = []; }
+    state.expenses = Array.isArray(list) ? list.map((e) => fromDoc(e.id, e)).filter(Boolean) : [];
+    state.storage = raw !== null || safeSet("mer.probe", "1") ? "local" : "memory";
+    state.loaded = true;
+    const writeAll = () => {
+      if (!safeSet("mer.expenses.v1", JSON.stringify(state.expenses))) {
+        state.storage = "memory";
+        toast("This browser refused to store more, so recent changes last only until you close the page.");
+      }
+      return Promise.resolve();
+    };
+    store = { save: writeAll, remove: writeAll };
+    if (message) toast(message);
+    render();
+  }
+
+  function toDoc(e) {
+    return {
+      merchant: e.merchant, amountCents: e.amountCents, vatCents: e.vatCents ?? null,
+      currency: e.currency, date: e.date, category: e.category, note: e.note || "",
+      image: e.image || null, createdAt: e.createdAt || Date.now(),
+    };
+  }
+  function fromDoc(id, d) {
+    if (!d || typeof d.amountCents !== "number" || typeof d.date !== "string") return null;
+    return {
+      id, merchant: String(d.merchant || ""), amountCents: d.amountCents,
+      vatCents: typeof d.vatCents === "number" ? d.vatCents : null,
+      currency: /^[A-Z]{3}$/.test(d.currency) ? d.currency : "EUR", date: d.date,
+      category: CAT[d.category] ? d.category : "Other", note: String(d.note || ""),
+      image: typeof d.image === "string" ? d.image : null, createdAt: d.createdAt || 0,
+    };
+  }
+
+  function persist(e) {
+    const i = state.expenses.findIndex((x) => x.id === e.id);
+    if (i === -1) state.expenses.push(e); else state.expenses[i] = e;
+    render();
+    Promise.resolve(store ? store.save(e) : null).catch((err) => {
+      toast(err && err.code === "quota_exceeded"
+        ? "Storage is full. Delete a few old expenses to add new ones."
+        : "Couldn't save that change. Check your connection and try again.");
+    });
+  }
+  function removeExpense(id) {
+    state.expenses = state.expenses.filter((x) => x.id !== id);
+    render();
+    Promise.resolve(store ? store.remove(id) : null).catch(() => toast("Couldn't delete that expense. Try again."));
+  }
+
+  // ---------- receipt reading via Claude (the prototype's stand-in for the API key) ----------
+  async function initReading() {
+    const c = window.claude;
+    if (c && typeof c.use === "function") {
+      sampleFn = await c.use("sample").catch(() => null);
+      downloadsNs = await c.use("downloads").catch(() => null);
+    }
+    let limits = null;
+    if (sampleFn) limits = await sampleFn.limits().catch(() => null);
+    if (sampleFn && limits && limits.images) {
+      state.reading = "ready";
+    } else {
+      state.reading = "off";
+      state.readingReason = sampleFn ? "This view can't send photos to Claude." : "Claude isn't available in this view.";
+    }
+    readingReady();
+    render();
+  }
+
+  function readingPrompt() {
+    return [
+      "This image is a photo of a purchase receipt for a freelancer's expense report.",
+      "Reply with only one JSON object with exactly these keys:",
+      '{"merchant": string|null, "total": string|null, "vat": string|null, "currency": string|null, "date": string|null, "category": string}',
+      '- total: the final amount paid including all taxes, as a decimal string with a dot, e.g. "42.90".',
+      "- vat: the VAT/tax AMOUNT (not the rate); sum several VAT lines; null if the receipt shows none.",
+      "- currency: ISO 4217 code such as EUR, USD, GBP, CHF.",
+      "- date: the purchase date as YYYY-MM-DD.",
+      "- merchant: the business name as printed, without address lines.",
+      "- category: exactly one of: " + CATS.map((c) => c.id).join(", ") + ".",
+      "Use null for anything you cannot read with reasonable confidence rather than guessing.",
+      "Today is " + today() + ".",
+    ].join("\n");
+  }
+
+  function parseReading(obj) {
+    const out = {};
+    if (!obj || typeof obj !== "object") return out;
+    if (typeof obj.merchant === "string" && obj.merchant.trim()) out.merchant = obj.merchant.trim().slice(0, 120);
+    const t = obj.total != null ? Money.parse(String(obj.total)) : null;
+    if (t != null && t > 0) out.total = t;
+    const v = obj.vat != null ? Money.parse(String(obj.vat)) : null;
+    if (v != null && v >= 0) out.vat = v;
+    if (typeof obj.currency === "string" && /^[A-Za-z]{3}$/.test(obj.currency.trim())) out.currency = obj.currency.trim().toUpperCase();
+    if (typeof obj.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(obj.date) && obj.date <= today()) out.date = obj.date;
+    if (typeof obj.category === "string" && CAT[obj.category]) out.category = obj.category;
+    return out;
+  }
+
+  const OFF_CODES = new Set(["not_granted", "sampling_disabled", "not_declared", "capability_disabled", "capability_removed", "images_unavailable"]);
+  function readingError(code) {
+    switch (code) {
+      case "rate_limited": return "Too many requests right now. Wait a moment, then try again.";
+      case "session_expired": return "Your claude.ai session expired. Sign in again, then try again.";
+      case "image_rejected": return "That image couldn't be read. Try a sharper or smaller photo.";
+      case "refused": return "Claude declined to read this image.";
+      case "invalid_json":
+      case "empty_completion": return "The reply couldn't be understood. Try again.";
+      default: return "Couldn't reach Claude. Check your connection and try again.";
+    }
+  }
+
+  // ---------- images ----------
+  function loadImage(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("decode")); };
+      img.src = url;
+    });
+  }
+  function drawScaled(img, maxEdge) {
+    const scale = Math.min(1, maxEdge / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(img.naturalWidth * scale));
+    c.height = Math.max(1, Math.round(img.naturalHeight * scale));
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    return c;
+  }
+  async function prepareImage(file) {
+    const img = await loadImage(file);
+    // Stored copy stays well under the 256 KiB document limit.
+    let edge = 900, q = 0.72, dataUrl = drawScaled(img, edge).toDataURL("image/jpeg", q);
+    while (dataUrl.length > 190000 && edge > 400) { edge -= 150; q -= 0.06; dataUrl = drawScaled(img, edge).toDataURL("image/jpeg", q); }
+    const blob = await new Promise((r) => drawScaled(img, 1568).toBlob(r, "image/jpeg", 0.85));
+    return { dataUrl, blob };
+  }
+
+  // ---------- rendering: the list ----------
+  const prevTotals = new Map();
+
+  function groups(list) {
+    const map = new Map();
+    for (const e of list) {
+      const k = e.date.slice(0, 7);
+      if (!map.has(k)) map.set(k, []);
+      map.get(k).push(e);
+    }
+    const cur = today().slice(0, 7);
+    if (!map.has(cur)) map.set(cur, []);
+    return [...map.entries()]
+      .sort((a, b) => b[0].localeCompare(a[0]))
+      .map(([key, items]) => ({
+        key,
+        items: items.sort((a, b) => b.date.localeCompare(a.date) || (b.createdAt || 0) - (a.createdAt || 0)),
+      }));
+  }
+  function totals(items) {
+    const sums = new Map();
+    for (const e of items) sums.set(e.currency, (sums.get(e.currency) || 0) + e.amountCents);
+    return [...sums.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  }
+
+  function thumbHtml(e) {
+    const c = catOf(e.category);
+    if (e.image) return `<img class="thumb" src="${esc(e.image)}" alt="">`;
+    return `<span class="thumb" style="color:${c.color};background:color-mix(in srgb, ${c.color} 15%, transparent)">${svg(c.key)}</span>`;
+  }
+
+  function slipHtml(e) {
+    const c = catOf(e.category);
+    const arrive = state.justAdded === e.id && !REDUCED ? " arrive" : "";
+    return `<li class="${arrive.trim()}"><button class="slip" type="button" data-id="${esc(e.id)}" aria-label="${esc(
+      `${e.merchant || "Unnamed merchant"}, ${c.id}, ${dayFmt.format(toDate(e.date))}, ${Money.fmt(e.amountCents, e.currency)}${e.example ? ", example" : ""}`
+    )}">
+      ${thumbHtml(e)}
+      <span class="slip-text">
+        <span class="slip-main">
+          <span class="merchant">${esc(e.merchant || "Unnamed merchant")}${e.example ? '<span class="chip-example">Example</span>' : ""}</span>
+          <span class="meta"><span style="color:${c.color};display:flex">${svg(c.key)}</span>${esc(c.id)} · ${esc(dayFmt.format(toDate(e.date)))}</span>
+        </span>
+        <span class="amount">${esc(Money.fmt(e.amountCents, e.currency))}</span>
+      </span>
+    </button></li>`;
+  }
+
+  function render() {
+    const list = visible();
+    const gs = groups(list);
+
+    // No-key equivalent: say plainly when photos can't be read.
+    const notice = $("notice");
+    if (state.reading === "off") {
+      notice.hidden = false;
+      notice.innerHTML = `${svg("keyoff")}<span>Receipt reading is off in this view, so photos are attached but not read. Everything else works with manual entry. <button type="button" data-open="settings">Why?</button></span>`;
+    } else {
+      notice.hidden = true;
+      notice.innerHTML = "";
+    }
+
+    $("banner").innerHTML = showingExamples() && state.loaded
+      ? `<div class="banner"><strong>No expenses yet</strong>These example receipts show how months fill up. Tap + to add your own; the examples disappear with your first one.</div>`
+      : "";
+
+    $("list").innerHTML = gs.map((g) => {
+      const t = totals(g.items);
+      const single = t.length <= 1;
+      const cur = single ? (t[0] ? t[0][0] : defaultCurrency()) : "";
+      const cents = single ? (t[0] ? t[0][1] : 0) : 0;
+      const totalText = single ? Money.fmt(cents, cur) : t.map(([code, c]) => Money.fmt(c, code)).join(" + ");
+      return `<section class="pocket" aria-label="${esc(monthTitle(g.key))}">
+        <header class="tab">
+          <div><h2>${esc(monthTitle(g.key))}</h2><p>${receipts(g.items.length)}</p></div>
+          <output class="total${single ? "" : " multi"}" data-key="${g.key}" data-cents="${cents}" data-cur="${cur}">${esc(totalText)}</output>
+        </header>
+        <ul class="card">${g.items.length ? g.items.map(slipHtml).join("") : `<li class="empty-row">No receipts yet this month</li>`}</ul>
+      </section>`;
+    }).join("");
+
+    $("exportBtn").disabled = showingExamples();
+    animateTotals();
+    state.justAdded = null;
+  }
+
+  // Signature motion: the pocket total counts to its new value.
+  function animateTotals() {
+    document.querySelectorAll(".total[data-key]").forEach((el) => {
+      const key = el.dataset.key, cents = +el.dataset.cents, cur = el.dataset.cur;
+      const prev = prevTotals.get(key);
+      prevTotals.set(key, { cents, cur });
+      if (!cur || REDUCED || !prev || prev.cur !== cur || prev.cents === cents) return;
+      const from = prev.cents, t0 = performance.now(), dur = 520;
+      const step = (t) => {
+        const p = Math.min(1, (t - t0) / dur), eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Money.fmt(Math.round(from + (cents - from) * eased), cur);
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+  }
+
+  // ---------- sheets ----------
+  let openSheetEl = null;
+  let lastFocus = null;
+  function openSheet(el) {
+    if (openSheetEl) closeSheet(true);
+    lastFocus = document.activeElement;
+    openSheetEl = el;
+    const scrim = $("scrim");
+    scrim.hidden = false; el.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => { scrim.classList.add("on"); el.classList.add("on"); }));
+    const focusTarget = el.querySelector("[data-autofocus]") || el.querySelector("button, [href], input, select, textarea, label[tabindex]");
+    setTimeout(() => focusTarget && focusTarget.focus({ preventScroll: true }), 60);
+  }
+  function closeSheet(immediate) {
+    const el = openSheetEl;
+    if (!el) return;
+    openSheetEl = null;
+    const scrim = $("scrim");
+    scrim.classList.remove("on"); el.classList.remove("on");
+    const done = () => { if (!el.classList.contains("on")) { el.hidden = true; } if (!openSheetEl) scrim.hidden = true; };
+    if (immediate) done(); else setTimeout(done, 360);
+    if (el === $("formSheet")) cancelReading();
+    if (lastFocus && lastFocus.focus) setTimeout(() => lastFocus.focus({ preventScroll: true }), 10);
+  }
+
+  // ---------- add flow ----------
+  function openAdd() {
+    $("addMsg").textContent = state.reading === "ready"
+      ? "Photos are read by Claude on your claude.ai account; you confirm every field before saving."
+      : state.reading === "off"
+        ? "Receipt reading is off here, so photos are attached but not read. Fill the fields by hand."
+        : "Photos are read automatically when Claude is available; you confirm every field before saving.";
+    $("camLabel").hidden = !TOUCH;
+    openSheet($("addSheet"));
+  }
+
+  async function onPicked(input) {
+    const file = input.files && input.files[0];
+    input.value = "";
+    if (!file) return;
+    closeSheet(true);
+    let prepared;
+    try { prepared = await prepareImage(file); }
+    catch { toast("That file isn't an image this browser can open. Try a JPEG or PNG."); return; }
+    openForm({ mode: "create", image: prepared.dataUrl, blob: prepared.blob });
+  }
+
+  // ---------- the form ----------
+  let form = null;
+  const F = {
+    merchant: () => $("fMerchant"), total: () => $("fTotal"), vat: () => $("fVat"),
+    currency: () => $("fCurrency"), date: () => $("fDate"), category: () => $("fCategory"), note: () => $("fNote"),
+  };
+
+  function fillSelects() {
+    $("fCategory").innerHTML = CATS.map((c) => `<option value="${esc(c.id)}">${esc(c.id)}</option>`).join("");
+  }
+  function setCurrencyOptions(code) {
+    const list = CURRENCIES.includes(code) ? CURRENCIES : [code, ...CURRENCIES];
+    $("fCurrency").innerHTML = list.map((c) => `<option value="${c}">${c}</option>`).join("");
+    $("fCurrency").value = code;
+  }
+  function paintCategoryGlyph() {
+    const c = catOf(F.category().value);
+    $("catGlyph").innerHTML = svg(c.key);
+    $("catGlyph").style.color = c.color;
+  }
+
+  function openForm({ mode, expense, image, blob }) {
+    const e = expense || {};
+    form = {
+      mode, id: e.id || null, createdAt: e.createdAt || null,
+      image: image || e.image || null, blob: blob || null,
+      dirty: new Set(), reading: "none", filled: 0, error: "", ctl: null,
+      initial: null,
+    };
+    $("formTitle").textContent = mode === "edit" ? "Edit Expense" : "New Expense";
+    F.merchant().value = e.merchant || "";
+    F.total().value = e.amountCents != null ? Money.plain(e.amountCents) : "";
+    F.vat().value = e.vatCents != null ? Money.plain(e.vatCents) : "";
+    setCurrencyOptions(e.currency || defaultCurrency());
+    F.date().value = e.date || today();
+    F.date().max = today();
+    F.category().value = e.category || "Other";
+    F.note().value = e.note || "";
+    paintCategoryGlyph();
+    $("deleteGroup").hidden = mode !== "edit";
+    $("deleteBtn").textContent = "Delete Expense";
+    $("deleteBtn").dataset.armed = "";
+    $("discardBar").hidden = true;
+    $("formFoot").hidden = true;
+    $("totalField").classList.remove("invalid");
+    const hasImage = !!form.image;
+    $("receiptGroup").hidden = !hasImage;
+    if (hasImage) $("receiptImg").src = form.image;
+    form.initial = snapshotFields();
+    renderStatus();
+    validate();
+    openSheet($("formSheet"));
+    if (mode === "create" && form.blob) startReading();
+  }
+
+  function snapshotFields() {
+    return Object.fromEntries(Object.entries(F).map(([k, el]) => [k, el().value]));
+  }
+  function isDirty() {
+    if (!form) return false;
+    const now = snapshotFields();
+    return Object.keys(now).some((k) => now[k] !== form.initial[k]) || (form.mode === "create" && !!form.image);
+  }
+
+  function validate() {
+    const cents = Money.parse(F.total().value);
+    const ok = cents != null && cents > 0 && form && form.reading !== "reading" && F.date().value;
+    $("formSave").disabled = !ok;
+    $("totalField").classList.toggle("invalid", F.total().value.trim() !== "" && (cents == null || cents <= 0));
+  }
+
+  function renderStatus() {
+    const box = $("readStatus");
+    if (!form || !form.image) { box.innerHTML = ""; return; }
+    let html = "";
+    switch (form.reading) {
+      case "off":
+        html = `${svg("keyoff")}<div><b>Manual entry</b><p>Receipt reading is off in this view, so this photo isn't read. It's kept with the expense.</p><button type="button" data-open="settings">Why?</button></div>`;
+        break;
+      case "reading":
+        html = `<span class="spin" aria-hidden="true"></span><div><b>Reading the receipt…</b><p>Usually 10–30 seconds. The first time, Claude asks you to allow it. You can start typing meanwhile.</p><div class="actions"><button type="button" id="stopReading">Stop</button></div></div>`;
+        break;
+      case "filled":
+        html = `<span style="color:var(--tint);display:flex">${svg("sparkles")}</span><div><b>${form.filled} ${form.filled === 1 ? "field" : "fields"} pre-filled</b><p>Edit anything that looks wrong.</p></div>`;
+        break;
+      case "failed":
+        html = `<span style="color:var(--warn);display:flex">${svg("warn")}</span><div><b>Couldn't read the receipt</b><p>${esc(form.error)}</p><button type="button" id="retryReading">Try Again</button></div>`;
+        break;
+      case "stopped":
+        html = `<span style="color:var(--label2);display:flex">${svg("pencil")}</span><div><b>Reading stopped</b><p>Fill the fields by hand, or read the photo again.</p><button type="button" id="retryReading">Read Again</button></div>`;
+        break;
+      default:
+        html = "";
+    }
+    box.innerHTML = html;
+    box.hidden = !html;
+    $("formFoot").hidden = form.reading !== "filled";
+  }
+
+  async function startReading() {
+    if (!form || !form.blob) return;
+    const myForm = form;
+    if (state.reading === "checking") {
+      myForm.reading = "reading"; renderStatus(); validate();
+      await readingReadyPromise;
+      if (form !== myForm) return;
+    }
+    if (state.reading !== "ready" || !sampleFn) {
+      myForm.reading = "off"; renderStatus(); validate();
+      return;
+    }
+    myForm.reading = "reading"; myForm.error = "";
+    renderStatus(); validate();
+    const ctl = new AbortController();
+    myForm.ctl = ctl;
+    try {
+      const obj = await sampleFn.json(readingPrompt(), { images: [myForm.blob], signal: ctl.signal });
+      if (form !== myForm) return;
+      applyReading(parseReading(obj));
+    } catch (err) {
+      if (form !== myForm) return;
+      const code = err && err.code;
+      if (code === "cancelled") { myForm.reading = "stopped"; }
+      else if (OFF_CODES.has(code)) {
+        state.reading = "off";
+        state.readingReason = code === "not_granted" ? "You chose not to let this page use Claude during this visit." : "Claude can't read photos in this view.";
+        myForm.reading = "off";
+        render();
+      } else {
+        myForm.reading = "failed";
+        myForm.error = readingError(code);
+      }
+    } finally {
+      if (form === myForm) { myForm.ctl = null; renderStatus(); validate(); }
+    }
+  }
+  function cancelReading() {
+    if (form && form.ctl) form.ctl.abort();
+  }
+
+  // Fills only what the person hasn't touched, so fast typing is never overwritten.
+  function applyReading(r) {
+    let n = 0;
+    const put = (key, value) => {
+      if (value == null || form.dirty.has(key)) return;
+      F[key]().value = value; n++;
+      const el = F[key]();
+      if (!REDUCED) { el.animate([{ backgroundColor: "color-mix(in srgb, var(--tint) 22%, transparent)" }, { backgroundColor: "transparent" }], { duration: 900, easing: "ease-out" }); }
+    };
+    put("merchant", r.merchant);
+    put("total", r.total != null ? Money.plain(r.total) : null);
+    put("vat", r.vat != null ? Money.plain(r.vat) : null);
+    if (r.currency && !form.dirty.has("currency")) { setCurrencyOptions(r.currency); n++; }
+    put("date", r.date);
+    put("category", r.category);
+    paintCategoryGlyph();
+    form.filled = n;
+    if (n === 0) { form.reading = "failed"; form.error = "Nothing legible was found. Fill the fields by hand."; }
+    else form.reading = "filled";
+  }
+
+  function saveForm() {
+    if (!form || $("formSave").disabled) return;
+    const amountCents = Money.parse(F.total().value);
+    if (amountCents == null || amountCents <= 0) return;
+    const vatText = F.vat().value.trim();
+    const e = {
+      id: form.id || newId(),
+      merchant: F.merchant().value.trim(),
+      amountCents,
+      vatCents: vatText ? Money.parse(vatText) : null,
+      currency: F.currency().value,
+      date: F.date().value > today() ? today() : F.date().value,
+      category: F.category().value,
+      note: F.note().value.trim(),
+      image: form.image,
+      createdAt: form.createdAt || Date.now(),
+    };
+    safeSet("mer.currency", e.currency);
+    const isNew = form.mode === "create";
+    form = null;
+    closeSheet();
+    if (isNew) state.justAdded = e.id;
+    persist(e);
+    toast(isNew ? "Expense saved" : "Changes saved");
+  }
+
+  function requestCancel() {
+    if (form && form.mode === "create" && isDirty()) {
+      $("discardBar").hidden = false;
+      $("keepEditing").focus();
+      return;
+    }
+    form = null;
+    closeSheet();
+  }
+
+  // ---------- settings ----------
+  function openSettings() {
+    const readingPill = state.reading === "ready" ? '<span class="pill on">On</span>' : state.reading === "off" ? '<span class="pill">Off</span>' : '<span class="pill">Checking</span>';
+    const storageText = {
+      db: ["Your private space on claude.ai", "Only you can see these expenses, on any device where you open this link."],
+      local: ["This browser only", "Expenses stay in this browser on this device. Clearing Safari's website data erases them."],
+      memory: ["Not saved", "This browser won't store data here, so expenses last until you close the page."],
+      pending: ["Connecting…", ""],
+    }[state.storage];
+    $("settingsBody").innerHTML = `
+      <p class="group-label">Receipt reading</p>
+      <div class="group">
+        <div class="row"><span class="grow">Read photos with Claude</span>${readingPill}</div>
+      </div>
+      <p class="foot">${state.reading === "ready"
+        ? "When you add a photo, it is sent to Claude on your own claude.ai account, which fills total, VAT, date, merchant and category. The first time, Claude asks you to allow it. Nothing is saved until you tap Save."
+        : state.reading === "off"
+          ? esc(state.readingReason) + " The app works fully with manual entry: photos are attached to the expense but not read. In the iPhone app the same switch is an Anthropic API key in Settings."
+          : "Checking whether Claude can read photos in this view…"}</p>
+      <p class="group-label">Storage</p>
+      <div class="group"><div class="row"><span class="grow">${esc(storageText[0])}<span class="sub">${esc(storageText[1])}</span></span></div></div>
+      <p class="group-label">Export</p>
+      <div class="group"><div class="row"><span class="grow">CSV per month</span><span class="val">Date, merchant, category, total incl. VAT, VAT, currency, note</span></div></div>
+      <p class="group-label">About</p>
+      <div class="group">
+        <div class="row"><span class="grow">Web prototype of the iPhone app<span class="sub">Same design and fields as the SwiftUI app, which needs a Mac with Xcode to build.</span></span></div>
+        <div class="row"><a class="grow" href="https://github.com/TheFDeux/my-expense-reports" target="_blank" rel="noopener">Source on GitHub</a><span style="color:var(--label3);display:flex">${svg("chevron")}</span></div>
+      </div>`;
+    openSheet($("settingsSheet"));
+  }
+
+  // ---------- export ----------
+  function csvSeparator() {
+    try {
+      const dec = new Intl.NumberFormat(LANG).formatToParts(1.1).find((p) => p.type === "decimal");
+      return dec && dec.value === "," ? ";" : ",";
+    } catch { return ","; }
+  }
+  function csvFor(items) {
+    const sep = csvSeparator();
+    const escField = (f) => (/[";,\r\n]/.test(f) || f.includes(sep) ? `"${f.replace(/"/g, '""')}"` : f);
+    const rows = [["Date", "Merchant", "Category", "Total incl. VAT", "VAT", "Currency", "Note"]];
+    [...items].sort((a, b) => a.date.localeCompare(b.date)).forEach((e) => {
+      rows.push([e.date, e.merchant, e.category, Money.plain(e.amountCents), e.vatCents != null ? Money.plain(e.vatCents) : "", e.currency, e.note || ""]);
+    });
+    return "﻿" + rows.map((r) => r.map((f) => escField(String(f))).join(sep)).join("\r\n") + "\r\n";
+  }
+  function openExport() {
+    const gs = groups(state.expenses).filter((g) => g.items.length);
+    $("exportBody").innerHTML = `
+      <div class="group">${gs.map((g) => {
+        const t = totals(g.items).map(([code, c]) => Money.fmt(c, code)).join(" + ");
+        return `<div class="row"><span class="grow">${esc(monthTitle(g.key))}<span class="sub num">${receipts(g.items.length)} · ${esc(t)}</span></span>
+          <button class="savebtn" type="button" data-export="${g.key}">${downloadsNs ? "Save CSV" : "Show CSV"}</button></div>`;
+      }).join("")}</div>
+      <p class="foot">One file per month, ready for your accountant. Opens in Excel, Numbers and Google Sheets.${csvSeparator() === ";" ? " Columns are separated by semicolons, as Excel expects with your language settings." : ""}</p>
+      <div id="csvPreview"></div>`;
+    openSheet($("exportSheet"));
+  }
+  async function exportMonth(key, btn) {
+    const items = state.expenses.filter((e) => e.date.slice(0, 7) === key);
+    const csv = csvFor(items);
+    const filename = `expenses-${key}.csv`;
+    if (downloadsNs) {
+      btn.disabled = true;
+      try {
+        await downloadsNs.save({ filename, data: csv });
+        toast(`${filename} saved`);
+      } catch (err) {
+        const code = err && err.code;
+        if (code === "declined") { /* the viewer said no; nothing to report */ }
+        else if (code === "rate_limited") toast("A save is already waiting for your answer.");
+        else showCsv(filename, csv);
+      } finally { btn.disabled = false; }
+    } else {
+      showCsv(filename, csv);
+    }
+  }
+  function showCsv(filename, csv) {
+    $("csvPreview").innerHTML = `
+      <p class="group-label">${esc(filename)}</p>
+      <div class="group"><textarea class="csvbox" id="csvText" readonly aria-label="CSV contents"></textarea>
+      <button class="rowbtn tint" type="button" id="copyCsv" style="border-top:0.5px solid var(--sep)">Copy CSV</button></div>
+      <p class="foot">Saving files isn't available in this view. Copy the text and paste it into Notes, Mail or a spreadsheet.</p>`;
+    $("csvText").value = csv.replace(/^﻿/, "");
+    $("csvText").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "nearest" });
+  }
+
+  // ---------- receipt viewer ----------
+  function openViewer(src) {
+    const v = $("viewer");
+    $("viewerImg").src = src;
+    $("viewerBody").classList.remove("zoom");
+    v.hidden = false;
+    requestAnimationFrame(() => v.classList.add("on"));
+    $("viewerDone").focus();
+  }
+  function closeViewer() {
+    const v = $("viewer");
+    v.classList.remove("on");
+    setTimeout(() => { v.hidden = true; }, 250);
+    $("receiptBtn").focus({ preventScroll: true });
+  }
+
+  // ---------- toast ----------
+  let toastTimer = null;
+  function toast(msg) {
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("on");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("on"), 2600);
+  }
+
+  // ---------- wiring ----------
+  function wire() {
+    $("addBtn").innerHTML = svg("plus");
+    $("exportBtn").innerHTML = svg("share");
+    $("settingsBtn").innerHTML = svg("gear");
+    $("expandIc").innerHTML = svg("expand");
+    $("camLabel").innerHTML = `${svg("camera")}Take Photo`;
+    $("libLabel").innerHTML = `${svg("photo")}Choose from Library`;
+    $("manualBtn").innerHTML = `${svg("pencil")}Enter Manually`;
+    fillSelects();
+
+    $("addBtn").addEventListener("click", openAdd);
+    $("addCancel").addEventListener("click", () => closeSheet());
+    $("manualBtn").addEventListener("click", () => { closeSheet(true); openForm({ mode: "create" }); });
+    ["camLabel", "libLabel"].forEach((id) => $(id).addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $(id === "camLabel" ? "camInput" : "libInput").click(); }
+    }));
+    $("camInput").addEventListener("change", (e) => onPicked(e.target));
+    $("libInput").addEventListener("change", (e) => onPicked(e.target));
+    $("settingsBtn").addEventListener("click", openSettings);
+    $("exportBtn").addEventListener("click", () => { if (!showingExamples()) openExport(); });
+    $("scrim").addEventListener("click", () => {
+      if (openSheetEl === $("formSheet")) requestCancel(); else closeSheet();
+    });
+    document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => closeSheet()));
+
+    // List: tap a slip to edit.
+    $("list").addEventListener("click", (ev) => {
+      const b = ev.target.closest(".slip");
+      if (!b) return;
+      const id = b.dataset.id;
+      const e = state.expenses.find((x) => x.id === id);
+      if (!e) { toast("That's an example. Tap + to add your own receipt."); return; }
+      openForm({ mode: "edit", expense: e });
+    });
+
+    // Form controls.
+    $("formCancel").addEventListener("click", requestCancel);
+    $("formSave").addEventListener("click", saveForm);
+    $("keepEditing").addEventListener("click", () => { $("discardBar").hidden = true; });
+    $("discardBtn").addEventListener("click", () => { form = null; closeSheet(); });
+    Object.entries(F).forEach(([key, get]) => {
+      const el = get();
+      const onChange = () => { if (form) { form.dirty.add(key); validate(); } if (key === "category") paintCategoryGlyph(); };
+      el.addEventListener("input", onChange);
+      el.addEventListener("change", onChange);
+    });
+    $("readStatus").addEventListener("click", (ev) => {
+      if (ev.target.id === "stopReading") cancelReading();
+      if (ev.target.id === "retryReading") startReading();
+    });
+    $("receiptBtn").addEventListener("click", () => form && form.image && openViewer(form.image));
+    $("deleteBtn").addEventListener("click", () => {
+      const b = $("deleteBtn");
+      if (!b.dataset.armed) {
+        b.dataset.armed = "1";
+        b.textContent = "Tap again to delete";
+        setTimeout(() => { if (b.dataset.armed) { b.dataset.armed = ""; b.textContent = "Delete Expense"; } }, 3000);
+        return;
+      }
+      const id = form && form.id;
+      form = null;
+      closeSheet();
+      if (id) { removeExpense(id); toast("Expense deleted"); }
+    });
+
+    // Export and copy.
+    $("exportBody").addEventListener("click", (ev) => {
+      const b = ev.target.closest("[data-export]");
+      if (b) exportMonth(b.dataset.export, b);
+      if (ev.target.id === "copyCsv") {
+        const text = $("csvText").value;
+        const fallback = () => { $("csvText").focus(); $("csvText").select(); toast("Text selected. Use Copy from the menu."); };
+        try {
+          navigator.clipboard.writeText(text).then(() => toast("CSV copied"), fallback);
+        } catch { fallback(); }
+      }
+    });
+
+    // "Why?" links anywhere open Settings.
+    document.addEventListener("click", (ev) => {
+      if (ev.target.closest("[data-open='settings']")) { if (openSheetEl) closeSheet(true); openSettings(); }
+    });
+
+    // Viewer.
+    $("viewerDone").addEventListener("click", closeViewer);
+    $("viewerImg").addEventListener("click", () => $("viewerBody").classList.toggle("zoom"));
+
+    document.addEventListener("keydown", (ev) => {
+      if (ev.key !== "Escape") return;
+      if (!$("viewer").hidden) { closeViewer(); return; }
+      if (openSheetEl === $("formSheet")) requestCancel(); else if (openSheetEl) closeSheet();
+    });
+
+    // Compact title once the large title scrolls under the bar.
+    const bar = $("bar");
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(([entry]) => bar.classList.toggle("scrolled", !entry.isIntersecting), { rootMargin: "-56px 0px 0px 0px" })
+        .observe($("largeTitle"));
+    }
+  }
+
+  wire();
+  render();             // the page at rest: examples until the ledger loads
+  initStorage().catch(() => useLocal());
+  initReading().catch(() => { state.reading = "off"; state.readingReason = "Claude isn't available in this view."; readingReady(); render(); });
+})();
+</script>
