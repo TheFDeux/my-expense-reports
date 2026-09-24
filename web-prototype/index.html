@@ -101,6 +101,40 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 }
 .banner strong { display: block; color: var(--label); font-size: 17px; margin-bottom: 2px; }
 
+/* Dashboard: this month at a glance, above the list */
+.dash { background: var(--cell); border-radius: 12px; margin: 4px 0 28px; }
+.dash-sec { padding: 16px; }
+.dash-sec + .dash-sec { border-top: 0.5px solid var(--sep); }
+.dash h2 { margin: 0; font-size: 15px; font-weight: 600; color: var(--label2); }
+.hero { margin: 4px 0 2px; font-size: 40px; line-height: 46px; font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.hero-sub { margin: 0; font-size: 15px; color: var(--label2); font-variant-numeric: tabular-nums; }
+.delta { display: flex; align-items: center; gap: 6px; margin: 10px 0 0; font-size: 15px; color: var(--label); }
+.delta .ic { font-size: 16px; color: var(--label2); }
+.dash-note { margin: 8px 0 0; font-size: 13px; color: var(--label2); }
+.cats { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 12px; }
+.cat-top { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+.cat-top .ic { font-size: 15px; }
+.cat-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cat-amt { font-variant-numeric: tabular-nums; }
+.cat-pct { width: 3.2em; text-align: right; color: var(--label2); font-size: 13px; font-variant-numeric: tabular-nums; }
+.cat-track { height: 6px; margin-top: 6px; border-radius: 3px; background: var(--fill); overflow: hidden; }
+.cat-bar { height: 100%; border-radius: 3px; min-width: 4px; }
+.trend { position: relative; margin-top: 14px; }
+.trend-plot { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; align-items: end; height: 120px; border-bottom: 1px solid var(--sep); }
+.tbar { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; cursor: pointer; border-radius: 4px; }
+.tbar:focus-visible { outline-offset: 1px; }
+.tbar span { display: block; width: min(100%, 34px); border-radius: 4px 4px 0 0; background: color-mix(in srgb, var(--tint) 34%, transparent); min-height: 2px; transition: height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.tbar.now span { background: var(--tint); }
+.tbar.active span { outline: 2px solid var(--cell); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tint) 40%, transparent); }
+.trend-labels { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 6px; font-size: 12px; color: var(--label2); text-align: center; }
+.trend-labels .now { color: var(--label); font-weight: 600; }
+.tip {
+  position: absolute; z-index: 2; bottom: calc(100% - 12px); transform: translate(-50%, -6px);
+  padding: 6px 10px; border-radius: 8px; background: var(--label); color: var(--bg);
+  font-size: 13px; line-height: 17px; white-space: nowrap; pointer-events: none; font-variant-numeric: tabular-nums;
+}
+.tip b { font-weight: 600; }
+
 /* The accordion file: one pocket per month, the header is its tab */
 .pocket { margin-bottom: 26px; }
 .tab { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; padding: 0 4px 8px; }
@@ -277,6 +311,7 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     <p class="notice" id="notice" hidden></p>
   </header>
   <div id="banner"></div>
+  <section id="dash" aria-label="This month at a glance"></section>
   <main id="list" aria-live="polite"></main>
 </div>
 
@@ -380,6 +415,9 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     keyoff: "M15 7.5a3 3 0 1 1-2.1 5.1L6 19.5H3.5V17l1.5-1.5h1.5V14h1.5l1.9-1.9M3 3l18 18",
     expand: "M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7",
     chevron: "M9 6l6 6-6 6",
+    down: "M12 5v14M6 13l6 6 6-6",
+    up: "M12 19V5M6 11l6-6 6 6",
+    same: "M5 9h14M5 15h14",
     receipt: "M6 3h12v18l-2-1.5L14 21l-2-1.5L10 21l-2-1.5L6 21zM9 8h6M9 12h6M9 16h3",
     meals: "M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 21V3c-2.2 0-3.5 2.6-3.5 6.5V13H17",
     travel: "M3 13.5l18-9-6.5 16.5-3-7.5z",
@@ -759,6 +797,8 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
       ? `<div class="banner"><strong>No expenses yet</strong>These example receipts show how months fill up. Tap + to add your own; the examples disappear with your first one.</div>`
       : "";
 
+    $("dash").innerHTML = dashboardHtml(list);
+
     $("list").innerHTML = gs.map((g) => {
       const t = totals(g.items);
       const single = t.length <= 1;
@@ -777,6 +817,127 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     $("exportBtn").disabled = showingExamples();
     animateTotals();
     state.justAdded = null;
+  }
+
+  // ---------- dashboard: this month at a glance ----------
+  const shortMonthFmt = new Intl.DateTimeFormat(LANG, { month: "short" });
+  const longMonthFmt = new Intl.DateTimeFormat(LANG, { month: "long" });
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  const shiftMonth = (key, delta) => { const d = toDate(key + "-01"); d.setMonth(d.getMonth() + delta); return isoDate(d).slice(0, 7); };
+  const sum = (items, f = (e) => e.amountCents) => items.reduce((a, e) => a + (f(e) || 0), 0);
+  let trendData = [];
+
+  // The dashboard speaks one currency: the one used most over the last six months.
+  function primaryCurrency(items) {
+    const counts = new Map();
+    for (const e of items) counts.set(e.currency, (counts.get(e.currency) || 0) + 1);
+    let best = defaultCurrency(), n = 0;
+    for (const [code, c] of counts) if (c > n) { best = code; n = c; }
+    return best;
+  }
+
+  function dashboardHtml(list) {
+    const curKey = today().slice(0, 7);
+    const firstKey = shiftMonth(curKey, -5);
+    const recent = list.filter((e) => e.date.slice(0, 7) >= firstKey);
+    const code = primaryCurrency(recent);
+    const inCode = recent.filter((e) => e.currency === code);
+    const month = inCode.filter((e) => e.date.slice(0, 7) === curKey);
+    const otherCurrency = list.filter((e) => e.date.slice(0, 7) === curKey && e.currency !== code).length;
+    const total = sum(month);
+    const vat = sum(month, (e) => e.vatCents);
+
+    // Month-to-date against the same days of last month, so the 5th isn't compared with a full month.
+    const prevKey = shiftMonth(curKey, -1);
+    const day = +today().slice(8, 10);
+    const prevMtd = sum(inCode.filter((e) => e.date.slice(0, 7) === prevKey && +e.date.slice(8, 10) <= day));
+    const prevName = cap(longMonthFmt.format(toDate(prevKey + "-01")));
+    let delta = "";
+    if (total > 0 || prevMtd > 0) {
+      const diff = total - prevMtd;
+      if (prevMtd === 0) delta = `${svg("up")}<span>Nothing spent in ${esc(prevName)} by this date</span>`;
+      else if (diff === 0) delta = `${svg("same")}<span>Same as ${esc(prevName)} at this point</span>`;
+      else delta = `${svg(diff < 0 ? "down" : "up")}<span><span class="num">${esc(Money.fmt(Math.abs(diff), code))}</span> ${diff < 0 ? "less" : "more"} than ${esc(prevName)} at this point</span>`;
+    }
+
+    // Where the money went: ranked, every bar named and valued (identity is never color alone).
+    const byCat = new Map();
+    for (const e of month) byCat.set(e.category, (byCat.get(e.category) || 0) + e.amountCents);
+    let cats = [...byCat.entries()].sort((a, b) => b[1] - a[1]);
+    if (cats.length > 5) {
+      const rest = cats.slice(4).reduce((a, [, c]) => a + c, 0);
+      cats = [...cats.slice(0, 4), ["__rest", rest]];
+    }
+    const maxCat = cats.length ? cats[0][1] : 0;
+    const catRows = cats.map(([id, cents]) => {
+      const c = id === "__rest" ? { id: "Other categories", key: "other", color: "var(--c-other)" } : catOf(id);
+      const pct = total > 0 ? Math.round((cents / total) * 100) : 0;
+      return `<li>
+        <div class="cat-top"><span style="color:${c.color};display:flex">${svg(c.key)}</span><span class="cat-name">${esc(c.id)}</span><span class="cat-amt">${esc(Money.fmt(cents, code))}</span><span class="cat-pct">${pct}%</span></div>
+        <div class="cat-track" aria-hidden="true"><div class="cat-bar" style="width:${maxCat ? (cents / maxCat) * 100 : 0}%;background:${c.color}"></div></div>
+      </li>`;
+    }).join("");
+
+    // Six-month trend: one series, one hue; this month in full tint.
+    trendData = [];
+    for (let i = 5; i >= 0; i--) {
+      const key = shiftMonth(curKey, -i);
+      const items = inCode.filter((e) => e.date.slice(0, 7) === key);
+      trendData.push({ key, cents: sum(items), n: items.length });
+    }
+    const maxT = Math.max(0, ...trendData.map((t) => t.cents));
+    const bars = trendData.map((t, i) => {
+      const h = maxT ? Math.max(t.cents > 0 ? 2 : 0, (t.cents / maxT) * 100) : 0;
+      const label = `${monthTitle(t.key)}: ${Money.fmt(t.cents, code)}, ${receipts(t.n)}`;
+      return `<button type="button" class="tbar${t.key === curKey ? " now" : ""}" data-i="${i}" aria-label="${esc(label)}"><span style="height:${h}%"></span></button>`;
+    }).join("");
+    const labels = trendData.map((t) => `<span class="${t.key === curKey ? "now" : ""}">${esc(cap(shortMonthFmt.format(toDate(t.key + "-01"))).replace(".", ""))}</span>`).join("");
+
+    return `<div class="dash">
+      <div class="dash-sec">
+        <h2>${esc(cap(longMonthFmt.format(toDate(curKey + "-01"))))} so far</h2>
+        <p class="hero">${esc(Money.fmt(total, code))}</p>
+        <p class="hero-sub">${receipts(month.length)} · VAT ${esc(Money.fmt(vat, code))}</p>
+        ${delta ? `<p class="delta">${delta}</p>` : ""}
+        ${otherCurrency ? `<p class="dash-note">Excludes ${receipts(otherCurrency)} in other currencies; they're listed below.</p>` : ""}
+      </div>
+      <div class="dash-sec">
+        <h2>By category</h2>
+        ${cats.length ? `<ul class="cats">${catRows}</ul>` : `<p class="dash-note">Add a receipt to see where this month's money goes.</p>`}
+      </div>
+      <div class="dash-sec">
+        <h2>Last 6 months</h2>
+        <div class="trend" id="trend">
+          <div class="trend-plot" role="group" aria-label="Monthly totals, last 6 months">${bars}</div>
+          <div class="trend-labels" aria-hidden="true">${labels}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function showTip(bar) {
+    const trend = $("trend");
+    if (!trend || !bar) return;
+    hideTip();
+    const t = trendData[+bar.dataset.i];
+    if (!t) return;
+    const code = primaryCurrency(visible().filter((e) => e.date.slice(0, 7) >= trendData[0].key));
+    const tip = document.createElement("div");
+    tip.className = "tip";
+    tip.innerHTML = `<b>${esc(monthTitle(t.key))}</b><br>${esc(Money.fmt(t.cents, code))} · ${receipts(t.n)}`;
+    trend.appendChild(tip);
+    const plot = trend.querySelector(".trend-plot");
+    const x = bar.offsetLeft + bar.offsetWidth / 2;
+    // Keep the tooltip inside the card at the edges.
+    const half = tip.offsetWidth / 2;
+    tip.style.left = Math.min(Math.max(x, half), plot.offsetWidth - half) + "px";
+    bar.classList.add("active");
+  }
+  function hideTip() {
+    const trend = $("trend");
+    if (!trend) return;
+    trend.querySelectorAll(".tip").forEach((t) => t.remove());
+    trend.querySelectorAll(".tbar.active").forEach((b) => b.classList.remove("active"));
   }
 
   // Signature motion: the pocket total counts to its new value.
@@ -1236,6 +1397,18 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
           navigator.clipboard.writeText(text).then(() => toast("CSV copied"), fallback);
         } catch { fallback(); }
       }
+    });
+
+    // Trend chart: hover or focus shows a month's total; a tap toggles it on touch screens.
+    const dash = $("dash");
+    dash.addEventListener("pointerover", (ev) => { const b = ev.target.closest(".tbar"); if (b && ev.pointerType === "mouse") showTip(b); });
+    dash.addEventListener("pointerout", (ev) => { const b = ev.target.closest(".tbar"); if (b && ev.pointerType === "mouse" && !b.contains(ev.relatedTarget)) hideTip(); });
+    dash.addEventListener("focusin", (ev) => { const b = ev.target.closest(".tbar"); if (b && b.matches(":focus-visible")) showTip(b); });
+    dash.addEventListener("focusout", () => hideTip());
+    dash.addEventListener("click", (ev) => {
+      const b = ev.target.closest(".tbar");
+      if (!b) return;
+      if (b.classList.contains("active") && ev.pointerType !== "mouse") hideTip(); else showTip(b);
     });
 
     // Appearance switch.
