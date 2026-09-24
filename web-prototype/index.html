@@ -20,7 +20,7 @@
   --shadow: 0 6px 18px rgba(60, 35, 10, 0.22), 0 1px 3px rgba(60, 35, 10, 0.18);
   --c-meals: #E0352B; --c-travel: #0A6FE0; --c-transport: #5552D1; --c-lodging: #9E45CF;
   --c-office: #1F97AD; --c-software: #00A89F; --c-equipment: #2690CC; --c-telecom: #2A9E47;
-  --c-services: #E0284E; --c-other: #7C7C83;
+  --c-services: #E0284E; --c-other: #7C7C83; --c-dinner: #8A1F3C;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -34,7 +34,7 @@
     --shadow: 0 6px 18px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
     --c-meals: #FF5A4F; --c-travel: #3D95FF; --c-transport: #7D7AF0; --c-lodging: #C174F0;
     --c-office: #45C3DA; --c-software: #2ED9CF; --c-equipment: #5AC0F2; --c-telecom: #45D46A;
-    --c-services: #FF5577; --c-other: #9C9CA3;
+    --c-services: #FF5577; --c-other: #9C9CA3; --c-dinner: #E47A96;
   }
 }
 :root[data-theme="dark"] {
@@ -48,7 +48,7 @@
   --shadow: 0 6px 18px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
   --c-meals: #FF5A4F; --c-travel: #3D95FF; --c-transport: #7D7AF0; --c-lodging: #C174F0;
   --c-office: #45C3DA; --c-software: #2ED9CF; --c-equipment: #5AC0F2; --c-telecom: #45D46A;
-  --c-services: #FF5577; --c-other: #9C9CA3;
+  --c-services: #FF5577; --c-other: #9C9CA3; --c-dinner: #E47A96;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -119,6 +119,26 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 .cat-pct { width: 3.2em; text-align: right; color: var(--label2); font-size: 13px; font-variant-numeric: tabular-nums; }
 .cat-track { height: 6px; margin-top: 6px; border-radius: 3px; background: var(--fill); overflow: hidden; }
 .cat-bar { height: 100%; border-radius: 3px; min-width: 4px; }
+.donut-wrap { display: grid; grid-template-columns: 148px 1fr; gap: 18px; align-items: center; margin-top: 12px; }
+@media (max-width: 360px) { .donut-wrap { grid-template-columns: 1fr; justify-items: center; } }
+.donut { position: relative; width: 148px; height: 148px; }
+.donut svg { width: 100%; height: 100%; transform: rotate(-90deg); display: block; }
+.donut circle { fill: none; stroke-width: 20; transition: opacity 0.2s, stroke-width 0.2s; cursor: pointer; }
+.donut circle.track { stroke: var(--fill); cursor: default; }
+.donut.focus circle.seg-arc { opacity: 0.28; }
+.donut.focus circle.seg-arc.on { opacity: 1; stroke-width: 24; }
+.donut-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; pointer-events: none; padding: 0 30px; }
+.donut-center b { font-size: 17px; line-height: 21px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.donut-center span { font-size: 12px; line-height: 15px; color: var(--label2); }
+.legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; min-width: 0; width: 100%; }
+.legend button { width: 100%; display: flex; align-items: center; gap: 8px; min-height: 32px; padding: 0 6px; margin: 0 -6px; border-radius: 8px; text-align: left; font-size: 15px; }
+.legend button.on { background: var(--fill); }
+.legend .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.legend .nm { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.legend .am { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.legend .pc { width: 2.8em; text-align: right; font-size: 13px; color: var(--label2); font-variant-numeric: tabular-nums; }
+.seg.two { grid-template-columns: repeat(2, 1fr); margin: 0; width: 190px; flex: none; }
+.seg.two button { min-height: 32px; }
 .trend { position: relative; margin-top: 14px; }
 .trend-plot { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; align-items: end; height: 120px; border-bottom: 1px solid var(--sep); }
 .tbar { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; cursor: pointer; border-radius: 4px; }
@@ -360,7 +380,15 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     <p class="group-label">Category</p>
     <div class="group">
       <label class="field"><span class="catglyph" id="catGlyph"></span><select id="fCategory" aria-label="Category"></select></label>
+      <div class="field" id="mealField" hidden>
+        <span id="mealLabel">Meal</span><span style="flex:1"></span>
+        <div class="seg two" role="radiogroup" aria-labelledby="mealLabel">
+          <button type="button" role="radio" aria-checked="false" data-meal="Lunch">Lunch</button>
+          <button type="button" role="radio" aria-checked="false" data-meal="Dinner">Dinner</button>
+        </div>
+      </div>
     </div>
+    <p class="foot" id="mealFoot" hidden>Read from the receipt's time: before 5 pm is lunch, from 5 pm it's dinner.</p>
     <p class="group-label">Note</p>
     <div class="group"><textarea id="fNote" rows="2" placeholder="Client, project, who was there…" aria-label="Note"></textarea></div>
     <p class="foot" id="formFoot" hidden>Check each field against the receipt before saving.</p>
@@ -440,6 +468,23 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
   ].map(([id, key]) => ({ id, key, color: `var(--c-${key})` }));
   const CAT = Object.fromEntries(CATS.map((c) => [c.id, c]));
   const catOf = (id) => CAT[id] || CAT.Other;
+
+  // Meals split into lunch and dinner. The cut-off is 5 pm: a receipt timed before 17:00 is lunch.
+  const MEALS = ["Lunch", "Dinner"];
+  const mealFromTime = (t) => {
+    const m = /^(\d{1,2}):(\d{2})/.exec(String(t || "").trim());
+    if (!m || +m[1] > 23 || +m[2] > 59) return null;
+    return +m[1] < 17 ? "Lunch" : "Dinner";
+  };
+  // The "type" the dashboard breaks down by: a category, with Meals split by meal.
+  const TYPE_STYLE = {
+    Lunch: { label: "Lunch", key: "meals", color: "var(--c-meals)" },
+    Dinner: { label: "Dinner", key: "meals", color: "var(--c-dinner)" },
+    Meals: { label: "Meals, not set", key: "meals", color: "color-mix(in srgb, var(--c-meals) 45%, var(--cell))" },
+  };
+  const typeOf = (e) => (e.category === "Meals" ? (MEALS.includes(e.meal) ? e.meal : "Meals") : e.category);
+  const typeStyle = (t) => TYPE_STYLE[t] || { label: catOf(t).id, key: catOf(t).key, color: catOf(t).color };
+  const typeLabel = (e) => (e.category === "Meals" && MEALS.includes(e.meal) ? e.meal : catOf(e.category).id);
 
   const CURRENCIES = ["EUR", "USD", "GBP", "CHF", "CAD", "JPY", "AUD", "SEK", "NOK", "DKK"];
   const REGION_CURRENCY = { US: "USD", GB: "GBP", CH: "CHF", CA: "CAD", JP: "JPY", AU: "AUD", SE: "SEK", NO: "NOK", DK: "DKK" };
@@ -548,7 +593,8 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     };
     const cur = defaultCurrency();
     return [
-      { id: "x1", example: true, merchant: "Boulangerie Martin", amountCents: 840, vatCents: 44, currency: cur, date: d(0, 22), category: "Meals" },
+      { id: "x1", example: true, merchant: "Boulangerie Martin", amountCents: 840, vatCents: 44, currency: cur, date: d(0, 22), category: "Meals", meal: "Lunch" },
+      { id: "x6", example: true, merchant: "Le Petit Zinc", amountCents: 6450, vatCents: 586, currency: cur, date: d(0, 17), category: "Meals", meal: "Dinner" },
       { id: "x2", example: true, merchant: "SNCF", amountCents: 8900, vatCents: 809, currency: cur, date: d(0, 12), category: "Transport" },
       { id: "x3", example: true, merchant: "Figma", amountCents: 1500, vatCents: 250, currency: cur, date: d(0, 3), category: "Software" },
       { id: "x4", example: true, merchant: "Hôtel du Parc", amountCents: 14200, vatCents: 1291, currency: cur, date: d(1, 18), category: "Lodging" },
@@ -612,6 +658,7 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     return {
       merchant: e.merchant, amountCents: e.amountCents, vatCents: e.vatCents ?? null,
       currency: e.currency, date: e.date, category: e.category, note: e.note || "",
+      meal: e.category === "Meals" && MEALS.includes(e.meal) ? e.meal : null,
       image: e.image || null, createdAt: e.createdAt || Date.now(),
     };
   }
@@ -622,6 +669,7 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
       vatCents: typeof d.vatCents === "number" ? d.vatCents : null,
       currency: /^[A-Z]{3}$/.test(d.currency) ? d.currency : "EUR", date: d.date,
       category: CAT[d.category] ? d.category : "Other", note: String(d.note || ""),
+      meal: d.category === "Meals" && MEALS.includes(d.meal) ? d.meal : null,
       image: typeof d.image === "string" ? d.image : null, createdAt: d.createdAt || 0,
     };
   }
@@ -665,11 +713,12 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     return [
       "This image is a photo of a purchase receipt for a freelancer's expense report.",
       "Reply with only one JSON object with exactly these keys:",
-      '{"merchant": string|null, "total": string|null, "vat": string|null, "currency": string|null, "date": string|null, "category": string}',
+      '{"merchant": string|null, "total": string|null, "vat": string|null, "currency": string|null, "date": string|null, "time": string|null, "category": string}',
       '- total: the final amount paid including all taxes, as a decimal string with a dot, e.g. "42.90".',
       "- vat: the VAT/tax AMOUNT (not the rate); sum several VAT lines; null if the receipt shows none.",
       "- currency: ISO 4217 code such as EUR, USD, GBP, CHF.",
       "- date: the purchase date as YYYY-MM-DD.",
+      '- time: the time printed on the receipt as 24-hour HH:MM, e.g. "13:05" or "20:40"; null if no time is printed.',
       "- merchant: the business name as printed, without address lines.",
       "- category: exactly one of: " + CATS.map((c) => c.id).join(", ") + ".",
       "Use null for anything you cannot read with reasonable confidence rather than guessing.",
@@ -688,6 +737,7 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     if (typeof obj.currency === "string" && /^[A-Za-z]{3}$/.test(obj.currency.trim())) out.currency = obj.currency.trim().toUpperCase();
     if (typeof obj.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(obj.date) && obj.date <= today()) out.date = obj.date;
     if (typeof obj.category === "string" && CAT[obj.category]) out.category = obj.category;
+    if (typeof obj.time === "string") out.meal = mealFromTime(obj.time);
     return out;
   }
 
@@ -766,13 +816,13 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     const c = catOf(e.category);
     const arrive = state.justAdded === e.id && !REDUCED ? " arrive" : "";
     return `<li class="${arrive.trim()}"><button class="slip" type="button" data-id="${esc(e.id)}" aria-label="${esc(
-      `${e.merchant || "Unnamed merchant"}, ${c.id}, ${dayFmt.format(toDate(e.date))}, ${Money.fmt(e.amountCents, e.currency)}${e.example ? ", example" : ""}`
+      `${e.merchant || "Unnamed merchant"}, ${c.id}${e.category === "Meals" && e.meal ? ", " + e.meal : ""}, ${dayFmt.format(toDate(e.date))}, ${Money.fmt(e.amountCents, e.currency)}${e.example ? ", example" : ""}`
     )}">
       ${thumbHtml(e)}
       <span class="slip-text">
         <span class="slip-main">
           <span class="merchant">${esc(e.merchant || "Unnamed merchant")}${e.example ? '<span class="chip-example">Example</span>' : ""}</span>
-          <span class="meta"><span style="color:${c.color};display:flex">${svg(c.key)}</span>${esc(c.id)} · ${esc(dayFmt.format(toDate(e.date)))}</span>
+          <span class="meta"><span style="color:${c.color};display:flex">${svg(c.key)}</span>${esc(typeLabel(e))} · ${esc(dayFmt.format(toDate(e.date)))}</span>
         </span>
         <span class="amount">${esc(Money.fmt(e.amountCents, e.currency))}</span>
       </span>
@@ -826,6 +876,27 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
   const shiftMonth = (key, delta) => { const d = toDate(key + "-01"); d.setMonth(d.getMonth() + delta); return isoDate(d).slice(0, 7); };
   const sum = (items, f = (e) => e.amountCents) => items.reduce((a, e) => a + (f(e) || 0), 0);
   let trendData = [];
+  let donutData = [], donutCode = "EUR", donutTotal = 0;
+
+  // Tap a slice or a legend row to single it out; tap again (or elsewhere in the chart) to go back to the total.
+  function focusSlice(i) {
+    const donut = $("donut");
+    if (!donut) return;
+    const d = donutData[i];
+    const on = d && !(donut.classList.contains("focus") && donut.dataset.focus === String(i));
+    donut.classList.toggle("focus", !!on);
+    donut.dataset.focus = on ? String(i) : "";
+    donut.querySelectorAll(".seg-arc").forEach((c) => c.classList.toggle("on", on && c.dataset.slice === String(i)));
+    document.querySelectorAll("#legend button").forEach((b) => {
+      const sel = on && b.dataset.slice === String(i);
+      b.classList.toggle("on", sel);
+      b.setAttribute("aria-pressed", String(sel));
+    });
+    const center = $("donutCenter");
+    center.innerHTML = on
+      ? `<b>${esc(Money.fmt(d.cents, donutCode))}</b><span>${esc(d.label)} · ${d.pct > 0 && d.pct < 1 ? "&lt;1" : Math.round(d.pct)}%</span>`
+      : `<b>${esc(Money.fmt(donutTotal, donutCode))}</b><span>this month</span>`;
+  }
 
   // The dashboard speaks one currency: the one used most over the last six months.
   function primaryCurrency(items) {
@@ -860,23 +931,44 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
       else delta = `${svg(diff < 0 ? "down" : "up")}<span><span class="num">${esc(Money.fmt(Math.abs(diff), code))}</span> ${diff < 0 ? "less" : "more"} than ${esc(prevName)} at this point</span>`;
     }
 
-    // Where the money went: ranked, every bar named and valued (identity is never color alone).
-    const byCat = new Map();
-    for (const e of month) byCat.set(e.category, (byCat.get(e.category) || 0) + e.amountCents);
-    let cats = [...byCat.entries()].sort((a, b) => b[1] - a[1]);
-    if (cats.length > 5) {
-      const rest = cats.slice(4).reduce((a, [, c]) => a + c, 0);
-      cats = [...cats.slice(0, 4), ["__rest", rest]];
+    // Where the money went, by type (Meals split into lunch and dinner): a donut plus a legend that names and values every slice.
+    const byType = new Map();
+    for (const e of month) { const t = typeOf(e); byType.set(t, (byType.get(t) || 0) + e.amountCents); }
+    let types = [...byType.entries()].sort((a, b) => b[1] - a[1]);
+    if (types.length > 7) {
+      const rest = types.slice(6).reduce((a, [, c]) => a + c, 0);
+      types = [...types.slice(0, 6), ["__rest", rest]];
     }
-    const maxCat = cats.length ? cats[0][1] : 0;
-    const catRows = cats.map(([id, cents]) => {
-      const c = id === "__rest" ? { id: "Other categories", key: "other", color: "var(--c-other)" } : catOf(id);
-      const pct = total > 0 ? Math.round((cents / total) * 100) : 0;
-      return `<li>
-        <div class="cat-top"><span style="color:${c.color};display:flex">${svg(c.key)}</span><span class="cat-name">${esc(c.id)}</span><span class="cat-amt">${esc(Money.fmt(cents, code))}</span><span class="cat-pct">${pct}%</span></div>
-        <div class="cat-track" aria-hidden="true"><div class="cat-bar" style="width:${maxCat ? (cents / maxCat) * 100 : 0}%;background:${c.color}"></div></div>
-      </li>`;
+    donutData = types.map(([t, cents]) => {
+      const st = t === "__rest" ? { label: "Other types", key: "other", color: "var(--c-other)" } : typeStyle(t);
+      return { t, cents, label: st.label, color: st.color, pct: total > 0 ? (cents / total) * 100 : 0 };
+    });
+    donutCode = code;
+    donutTotal = total;
+    const pctText = (p) => (p > 0 && p < 1 ? "<1%" : Math.round(p) + "%");
+    const C = 2 * Math.PI * 50;   // circumference in the SVG's own units
+    const GAP = donutData.length > 1 ? 1.2 : 0;   // a thin surface gap between slices, in % of the ring
+    let at = 0;
+    const arcs = donutData.map((d, i) => {
+      const len = Math.max(d.pct - GAP, 0.6);
+      const arc = `<circle class="seg-arc" data-slice="${i}" cx="60" cy="60" r="50" stroke="${d.color}"
+        stroke-dasharray="${(len / 100) * C} ${C}" stroke-dashoffset="${-((at + GAP / 2) / 100) * C}"
+        aria-label="${esc(`${d.label}: ${Money.fmt(d.cents, code)}, ${pctText(d.pct)}`)}"></circle>`;
+      at += d.pct;
+      return arc;
     }).join("");
+    const legendRows = donutData.map((d, i) => `<li><button type="button" data-slice="${i}" aria-pressed="false">
+        <span class="dot" style="background:${d.color}"></span><span class="nm">${esc(d.label)}</span>
+        <span class="am">${esc(Money.fmt(d.cents, code))}</span><span class="pc">${pctText(d.pct)}</span></button></li>`).join("");
+    const donutHtml = donutData.length ? `<div class="donut-wrap">
+        <div class="donut" id="donut">
+          <svg viewBox="0 0 120 120" role="img" aria-label="${esc(`Spending by type this month, total ${Money.fmt(total, code)}`)}">
+            <circle class="track" cx="60" cy="60" r="50"></circle>${arcs}
+          </svg>
+          <div class="donut-center" id="donutCenter"><b>${esc(Money.fmt(total, code))}</b><span>this month</span></div>
+        </div>
+        <ul class="legend" id="legend">${legendRows}</ul>
+      </div>` : "";
 
     // Six-month trend: one series, one hue; this month in full tint.
     trendData = [];
@@ -902,8 +994,8 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
         ${otherCurrency ? `<p class="dash-note">Excludes ${receipts(otherCurrency)} in other currencies; they're listed below.</p>` : ""}
       </div>
       <div class="dash-sec">
-        <h2>By category</h2>
-        ${cats.length ? `<ul class="cats">${catRows}</ul>` : `<p class="dash-note">Add a receipt to see where this month's money goes.</p>`}
+        <h2>By type</h2>
+        ${donutHtml || `<p class="dash-note">Add a receipt to see where this month's money goes.</p>`}
       </div>
       <div class="dash-sec">
         <h2>Last 6 months</h2>
@@ -1023,6 +1115,14 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     const c = catOf(F.category().value);
     $("catGlyph").innerHTML = svg(c.key);
     $("catGlyph").style.color = c.color;
+    const isMeal = c.id === "Meals";
+    $("mealField").hidden = !isMeal;
+    $("mealFoot").hidden = !isMeal || !form || !form.mealFromReceipt;
+  }
+  function setMeal(value) {
+    if (!form) return;
+    form.meal = MEALS.includes(value) ? value : null;
+    document.querySelectorAll("[data-meal]").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.meal === form.meal)));
   }
 
   function openForm({ mode, expense, image, blob }) {
@@ -1031,8 +1131,10 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
       mode, id: e.id || null, createdAt: e.createdAt || null,
       image: image || e.image || null, blob: blob || null,
       dirty: new Set(), reading: "none", filled: 0, error: "", ctl: null,
-      initial: null,
+      initial: null, meal: null, initialMeal: null, mealFromReceipt: false,
     };
+    setMeal(e.category === "Meals" ? e.meal : null);
+    form.initialMeal = form.meal;
     $("formTitle").textContent = mode === "edit" ? "Edit Expense" : "New Expense";
     F.merchant().value = e.merchant || "";
     F.total().value = e.amountCents != null ? Money.plain(e.amountCents) : "";
@@ -1065,7 +1167,7 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
   function isDirty() {
     if (!form) return false;
     const now = snapshotFields();
-    return Object.keys(now).some((k) => now[k] !== form.initial[k]) || (form.mode === "create" && !!form.image);
+    return Object.keys(now).some((k) => now[k] !== form.initial[k]) || form.meal !== form.initialMeal || (form.mode === "create" && !!form.image);
   }
 
   function validate() {
@@ -1159,6 +1261,7 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     if (r.currency && !form.dirty.has("currency")) { setCurrencyOptions(r.currency); n++; }
     put("date", r.date);
     put("category", r.category);
+    if (r.meal && !form.dirty.has("meal")) { setMeal(r.meal); form.mealFromReceipt = true; if (F.category().value === "Meals") n++; }
     paintCategoryGlyph();
     form.filled = n;
     if (n === 0) { form.reading = "failed"; form.error = "Nothing legible was found. Fill the fields by hand."; }
@@ -1178,6 +1281,7 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
       currency: F.currency().value,
       date: F.date().value > today() ? today() : F.date().value,
       category: F.category().value,
+      meal: F.category().value === "Meals" ? form.meal : null,
       note: F.note().value.trim(),
       image: form.image,
       createdAt: form.createdAt || Date.now(),
@@ -1247,9 +1351,9 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
   function csvFor(items) {
     const sep = csvSeparator();
     const escField = (f) => (/[";,\r\n]/.test(f) || f.includes(sep) ? `"${f.replace(/"/g, '""')}"` : f);
-    const rows = [["Date", "Merchant", "Category", "Total incl. VAT", "VAT", "Currency", "Note"]];
+    const rows = [["Date", "Merchant", "Category", "Meal", "Total incl. VAT", "VAT", "Currency", "Note"]];
     [...items].sort((a, b) => a.date.localeCompare(b.date)).forEach((e) => {
-      rows.push([e.date, e.merchant, e.category, Money.plain(e.amountCents), e.vatCents != null ? Money.plain(e.vatCents) : "", e.currency, e.note || ""]);
+      rows.push([e.date, e.merchant, e.category, e.category === "Meals" && e.meal ? e.meal : "", Money.plain(e.amountCents), e.vatCents != null ? Money.plain(e.vatCents) : "", e.currency, e.note || ""]);
     });
     return "﻿" + rows.map((r) => r.map((f) => escField(String(f))).join(sep)).join("\r\n") + "\r\n";
   }
@@ -1397,6 +1501,22 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
           navigator.clipboard.writeText(text).then(() => toast("CSV copied"), fallback);
         } catch { fallback(); }
       }
+    });
+
+    // Lunch / Dinner switch in the form.
+    $("mealField").addEventListener("click", (ev) => {
+      const b = ev.target.closest("[data-meal]");
+      if (!b || !form) return;
+      setMeal(form.meal === b.dataset.meal ? null : b.dataset.meal);
+      form.dirty.add("meal");
+      form.mealFromReceipt = false;
+      paintCategoryGlyph();
+    });
+
+    // Donut: a slice or legend row singles that type out.
+    $("dash").addEventListener("click", (ev) => {
+      const s = ev.target.closest("[data-slice]");
+      if (s) focusSlice(+s.dataset.slice);
     });
 
     // Trend chart: hover or focus shows a month's total; a tap toggles it on touch screens.

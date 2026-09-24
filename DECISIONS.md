@@ -104,3 +104,16 @@ If the first build fails, look here first; everything else is long-stable API:
 - `Button(_:systemImage:role:action:)` initializers (iOS 17+).
 - `.contentTransition(.numericText())` (iOS 16+), `ContentUnavailableView`, `.photosPicker(isPresented:selection:matching:)`, `MagnifyGesture`, `containerRelativeFrame` (iOS 17+).
 - Heterogeneous `[String: Any]` literals in `ReceiptExtractor.requestBody`; if type-checking is slow or fails, split the schema into typed `Encodable` structs.
+
+## 14. Web prototype (claude.ai artifact)
+
+A single-file web version in `web-prototype/index.html`, published as a private claude.ai artifact so the app can be tried on an iPhone without a Mac.
+- **Receipt reading uses the viewer's claude.ai account** (`sample` capability) instead of an API key: the artifact sandbox blocks direct calls to api.anthropic.com. When reading is unavailable, the page says so and works manually, mirroring the app's no-key mode.
+- **Storage** is the viewer's private per-user space (`db` under `data/users/<id>`), falling back to browser storage. **CSV** goes through the platform's save prompt, falling back to copyable text.
+- **Example receipts** appear only while the ledger is empty; they are labelled, never saved, never exported.
+- **Appearance switch** (System / Light / Dark) in Settings, remembered per browser. Requested by the user.
+- **"This month" dashboard above the list**, requested by the user; it overrides the original direction contract, which had refused a summary-on-top layout. It shows month-to-date total, receipt count and VAT, a comparison with the same days of last month, spending by type, and a six-month trend. It uses one currency (the most used over six months) and says when receipts in other currencies are left out.
+- **Meals split into Lunch / Dinner**, requested by the user, with a **5 pm cut-off** (a receipt timed before 17:00 is lunch). Claude reads the printed time and the app applies the rule, so the cut-off is deterministic; the person can change it. The CSV gains a "Meal" column.
+- **Spending by type is a donut chart** (requested) with the total in the centre and a legend naming and valuing every slice; more than seven types fold into "Other types". Tap a slice or legend row to single it out.
+- The categorical palette validator could not run on this machine (no Node, and the local preview couldn't execute it), so every chart colour is backed by a text label and chart identity never depends on colour alone.
+- The Swift app does not have the dashboard, the Lunch/Dinner split or the donut yet.
