@@ -1,0 +1,21 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+.swiftpm/
+Package.resolved
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+
+# Impeccable working files (keep surfaces + design.json)
+.impeccable/review/
+.impeccable/build/
+.impeccable/mocks/
