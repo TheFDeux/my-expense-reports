@@ -140,12 +140,19 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 .seg.two { grid-template-columns: repeat(2, 1fr); margin: 0; width: 190px; flex: none; }
 .seg.two button { min-height: 32px; }
 .trend { position: relative; margin-top: 14px; }
-.trend-plot { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; align-items: end; height: 120px; border-bottom: 1px solid var(--sep); }
-.tbar { position: relative; height: 100%; display: flex; align-items: flex-end; justify-content: center; cursor: pointer; border-radius: 4px; }
+.trend-plot { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; align-items: end; height: 150px; border-bottom: 1px solid var(--sep); }
+.tbar { position: relative; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; cursor: pointer; border-radius: 4px; }
 .tbar:focus-visible { outline-offset: 1px; }
-.tbar span { display: block; width: min(100%, 34px); border-radius: 4px 4px 0 0; background: color-mix(in srgb, var(--tint) 34%, transparent); min-height: 2px; transition: height 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
-.tbar.now span { background: var(--tint); }
-.tbar.active span { outline: 2px solid var(--cell); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tint) 40%, transparent); }
+.tval { font-size: 11px; line-height: 14px; color: var(--label2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tbar.now .tval { color: var(--label); font-weight: 600; }
+.stack { width: min(100%, 36px); display: flex; flex-direction: column-reverse; gap: 2px; border-radius: 4px 4px 0 0; overflow: hidden; }
+.stack i { display: block; min-height: 2px; }
+.tbar.active .stack { box-shadow: 0 0 0 2px var(--cell), 0 0 0 4px var(--label3); }
+.tlegend { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--label2); }
+.tlegend li { display: flex; align-items: center; gap: 6px; }
+.tlegend .dot { width: 9px; height: 9px; border-radius: 50%; }
+.tip-row { display: flex; align-items: center; gap: 6px; }
+.tip-row .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
 .trend-labels { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 6px; font-size: 12px; color: var(--label2); text-align: center; }
 .trend-labels .now { color: var(--label); font-weight: 600; }
 .tip {
@@ -875,6 +882,19 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
   const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   const shiftMonth = (key, delta) => { const d = toDate(key + "-01"); d.setMonth(d.getMonth() + delta); return isoDate(d).slice(0, 7); };
   const sum = (items, f = (e) => e.amountCents) => items.reduce((a, e) => a + (f(e) || 0), 0);
+  // Short totals that fit above a narrow bar: "182 €", "1,2 k€".
+  const compactCache = new Map();
+  function compactMoney(cents, code) {
+    let f = compactCache.get(code);
+    if (!f) {
+      try { f = new Intl.NumberFormat(LANG, { style: "currency", currency: code, notation: "compact", maximumFractionDigits: 1 }); }
+      catch { f = null; }
+      compactCache.set(code, f);
+    }
+    const v = cents / 100;
+    if (!f) return Math.round(v) + " " + code;
+    return v < 1000 ? Money.fmt(Math.round(v) * 100, code).replace(/[.,]00(?=\D*$)/, "") : f.format(v);
+  }
   let trendData = [];
   let donutData = [], donutCode = "EUR", donutTotal = 0;
 
@@ -970,19 +990,32 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
         <ul class="legend" id="legend">${legendRows}</ul>
       </div>` : "";
 
-    // Six-month trend: one series, one hue; this month in full tint.
+    // Six-month trend: one stacked bar per month, segments by type in the donut's colors, the total on top.
+    const sixTypes = new Map();
+    for (const e of inCode) { const t = typeOf(e); sixTypes.set(t, (sixTypes.get(t) || 0) + e.amountCents); }
+    let order = [...sixTypes.entries()].sort((a, b) => b[1] - a[1]).map(([t]) => t);
+    const folded = new Set(order.length > 7 ? order.slice(6) : []);
+    if (folded.size) order = [...order.slice(0, 6), "__rest"];
+    const styleFor = (t) => (t === "__rest" ? { label: "Other types", color: "var(--c-other)" } : typeStyle(t));
     trendData = [];
     for (let i = 5; i >= 0; i--) {
       const key = shiftMonth(curKey, -i);
       const items = inCode.filter((e) => e.date.slice(0, 7) === key);
-      trendData.push({ key, cents: sum(items), n: items.length });
+      const parts = new Map();
+      for (const e of items) { const t = folded.has(typeOf(e)) ? "__rest" : typeOf(e); parts.set(t, (parts.get(t) || 0) + e.amountCents); }
+      trendData.push({ key, cents: sum(items), n: items.length, parts: order.filter((t) => parts.get(t)).map((t) => ({ t, cents: parts.get(t), ...styleFor(t) })) });
     }
     const maxT = Math.max(0, ...trendData.map((t) => t.cents));
     const bars = trendData.map((t, i) => {
-      const h = maxT ? Math.max(t.cents > 0 ? 2 : 0, (t.cents / maxT) * 100) : 0;
-      const label = `${monthTitle(t.key)}: ${Money.fmt(t.cents, code)}, ${receipts(t.n)}`;
-      return `<button type="button" class="tbar${t.key === curKey ? " now" : ""}" data-i="${i}" aria-label="${esc(label)}"><span style="height:${h}%"></span></button>`;
+      const ratio = maxT ? t.cents / maxT : 0;
+      const segs = t.parts.map((p) => `<i style="flex:${p.cents} 1 0;background:${p.color}"></i>`).join("");
+      const label = `${monthTitle(t.key)}: ${Money.fmt(t.cents, code)}, ${receipts(t.n)}` +
+        (t.parts.length ? ". " + t.parts.map((p) => `${p.label} ${Money.fmt(p.cents, code)}`).join(", ") : "");
+      return `<button type="button" class="tbar${t.key === curKey ? " now" : ""}" data-i="${i}" aria-label="${esc(label)}">
+        <span class="tval">${t.cents ? esc(compactMoney(t.cents, code)) : ""}</span>
+        <span class="stack" style="height:calc((100% - 18px) * ${ratio.toFixed(4)})">${segs}</span></button>`;
     }).join("");
+    const trendLegend = order.map((t) => { const s = styleFor(t); return `<li><span class="dot" style="background:${s.color}"></span>${esc(s.label)}</li>`; }).join("");
     const labels = trendData.map((t) => `<span class="${t.key === curKey ? "now" : ""}">${esc(cap(shortMonthFmt.format(toDate(t.key + "-01"))).replace(".", ""))}</span>`).join("");
 
     return `<div class="dash">
@@ -1003,6 +1036,7 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
           <div class="trend-plot" role="group" aria-label="Monthly totals, last 6 months">${bars}</div>
           <div class="trend-labels" aria-hidden="true">${labels}</div>
         </div>
+        ${order.length > 1 ? `<ul class="tlegend" aria-label="Types">${trendLegend}</ul>` : ""}
       </div>
     </div>`;
   }
@@ -1016,7 +1050,8 @@ textarea { display: block; width: 100%; border: 0; background: none; outline: no
     const code = primaryCurrency(visible().filter((e) => e.date.slice(0, 7) >= trendData[0].key));
     const tip = document.createElement("div");
     tip.className = "tip";
-    tip.innerHTML = `<b>${esc(monthTitle(t.key))}</b><br>${esc(Money.fmt(t.cents, code))} · ${receipts(t.n)}`;
+    tip.innerHTML = `<b>${esc(monthTitle(t.key))}</b><br>${esc(Money.fmt(t.cents, code))} · ${receipts(t.n)}` +
+      t.parts.slice().reverse().map((p) => `<div class="tip-row"><span class="dot" style="background:${p.color}"></span>${esc(p.label)} ${esc(Money.fmt(p.cents, code))}</div>`).join("");
     trend.appendChild(tip);
     const plot = trend.querySelector(".trend-plot");
     const x = bar.offsetLeft + bar.offsetWidth / 2;
