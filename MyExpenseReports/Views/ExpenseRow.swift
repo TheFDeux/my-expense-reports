@@ -61,6 +61,7 @@ struct ExpenseRow: View {
 /// The pocket's tab: month leading, total trailing in the largest figure on screen, receipt count beneath.
 struct MonthHeader: View {
     let group: MonthGroup
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
@@ -78,7 +79,7 @@ struct MonthHeader: View {
                 .monospacedDigit()
                 .foregroundStyle(.primary)
                 .contentTransition(.numericText())
-                .animation(.default, value: group.totalText)
+                .animation(reduceMotion ? nil : .default, value: group.totalText)
         }
         .textCase(nil)
         .padding(.vertical, 4)

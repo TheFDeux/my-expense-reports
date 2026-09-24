@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-24T00:00:00Z",
+  "title": "Design System: My Expense Reports",
+  "provenance": "Source-derived from MyExpenseReports/ Swift and Assets.xcassets; no Simulator screenshots exist (authored on Windows). System-color hex values are iOS light/dark appearance renderings; the SwiftUI semantic name is normative.",
+  "extensions": {
+    "colorMeta": {
+      "kraft": {
+        "role": "primary",
+        "displayName": "Kraft",
+        "canonical": "Assets.xcassets/AccentColor.colorset (universal) #A65C1A",
+        "appearances": { "light": "#A65C1A", "dark": "#D98B45", "lightIncreasedContrast": "#9A5417", "darkIncreasedContrast": "#E8A05E" },
+        "tonalRamp": ["oklch(15% 0.06 56)", "oklch(26% 0.09 56)", "oklch(38% 0.12 56)", "oklch(52% 0.13 56)", "oklch(64% 0.13 58)", "oklch(74% 0.11 62)", "oklch(85% 0.07 66)", "oklch(95% 0.03 70)"]
+      },
+      "kraft-dark": { "role": "primary", "displayName": "Kraft (Dark)", "canonical": "AccentColor dark appearance #D98B45", "tonalRamp": ["oklch(15% 0.06 60)", "oklch(26% 0.09 60)", "oklch(38% 0.12 60)", "oklch(52% 0.13 60)", "oklch(64% 0.13 62)", "oklch(74% 0.11 64)", "oklch(85% 0.07 68)", "oklch(95% 0.03 72)"] },
+      "kraft-increased-contrast": { "role": "primary", "displayName": "Kraft (Increased Contrast)", "canonical": "AccentColor contrast=high #9A5417", "tonalRamp": ["oklch(15% 0.06 56)", "oklch(26% 0.09 56)", "oklch(38% 0.12 56)", "oklch(49% 0.13 56)", "oklch(62% 0.13 58)", "oklch(74% 0.11 62)", "oklch(85% 0.07 66)", "oklch(95% 0.03 70)"] },
+      "kraft-dark-increased-contrast": { "role": "primary", "displayName": "Kraft (Dark, Increased Contrast)", "canonical": "AccentColor dark+contrast=high #E8A05E", "tonalRamp": ["oklch(15% 0.06 62)", "oklch(26% 0.09 62)", "oklch(38% 0.12 62)", "oklch(52% 0.13 62)", "oklch(64% 0.13 64)", "oklch(76% 0.11 66)", "oklch(86% 0.07 70)", "oklch(95% 0.03 74)"] },
+      "label": { "role": "neutral", "displayName": "Label", "canonical": ".primary / UIColor.label", "appearances": { "light": "#000000", "dark": "#FFFFFF" }, "tonalRamp": ["oklch(15% 0 0)", "oklch(26% 0 0)", "oklch(38% 0 0)", "oklch(50% 0 0)", "oklch(62% 0 0)", "oklch(74% 0 0)", "oklch(86% 0 0)", "oklch(95% 0 0)"] },
+      "secondary-label": { "role": "neutral", "displayName": "Secondary Label", "canonical": ".secondary / UIColor.secondaryLabel", "appearances": { "light": "rgba(60, 60, 67, 0.6)", "dark": "rgba(235, 235, 245, 0.6)" }, "tonalRamp": ["oklch(15% 0.005 285)", "oklch(26% 0.005 285)", "oklch(38% 0.005 285)", "oklch(50% 0.005 285)", "oklch(62% 0.005 285)", "oklch(74% 0.005 285)", "oklch(86% 0.005 285)", "oklch(95% 0.005 285)"] },
+      "grouped-background": { "role": "neutral", "displayName": "Grouped Background", "canonical": "UIColor.systemGroupedBackground via .insetGrouped / Form", "appearances": { "light": "#F2F2F7", "dark": "#000000" }, "tonalRamp": ["oklch(15% 0.005 285)", "oklch(26% 0.005 285)", "oklch(38% 0.005 285)", "oklch(50% 0.005 285)", "oklch(62% 0.005 285)", "oklch(74% 0.005 285)", "oklch(86% 0.005 285)", "oklch(96% 0.005 285)"] },
+      "grouped-cell": { "role": "neutral", "displayName": "Grouped Cell", "canonical": "UIColor.secondarySystemGroupedBackground via list cells", "appearances": { "light": "#FFFFFF", "dark": "#1C1C1E" }, "tonalRamp": ["oklch(15% 0 0)", "oklch(26% 0 0)", "oklch(38% 0 0)", "oklch(50% 0 0)", "oklch(62% 0 0)", "oklch(74% 0 0)", "oklch(86% 0 0)", "oklch(99% 0 0)"] },
+      "category-meals": { "role": "category", "displayName": "Meals (system red)", "canonical": "Color.red", "appearances": { "light": "#FF3B30", "dark": "#FF453A" }, "symbol": "fork.knife", "tonalRamp": ["oklch(15% 0.08 28)", "oklch(26% 0.13 28)", "oklch(38% 0.18 28)", "oklch(50% 0.22 28)", "oklch(62% 0.24 28)", "oklch(74% 0.16 28)", "oklch(86% 0.09 28)", "oklch(95% 0.03 28)"] },
+      "category-travel": { "role": "category", "displayName": "Travel (system blue)", "canonical": "Color.blue", "appearances": { "light": "#007AFF", "dark": "#0A84FF" }, "symbol": "airplane", "tonalRamp": ["oklch(15% 0.08 258)", "oklch(26% 0.13 258)", "oklch(38% 0.18 258)", "oklch(50% 0.22 258)", "oklch(62% 0.22 258)", "oklch(74% 0.15 258)", "oklch(86% 0.08 258)", "oklch(95% 0.03 258)"] },
+      "category-transport": { "role": "category", "displayName": "Transport (system indigo)", "canonical": "Color.indigo", "appearances": { "light": "#5856D6", "dark": "#5E5CE6" }, "symbol": "car.fill", "tonalRamp": ["oklch(15% 0.07 282)", "oklch(26% 0.12 282)", "oklch(38% 0.16 282)", "oklch(50% 0.19 282)", "oklch(62% 0.18 282)", "oklch(74% 0.12 282)", "oklch(86% 0.07 282)", "oklch(95% 0.03 282)"] },
+      "category-lodging": { "role": "category", "displayName": "Lodging (system purple)", "canonical": "Color.purple", "appearances": { "light": "#AF52DE", "dark": "#BF5AF2" }, "symbol": "bed.double.fill", "tonalRamp": ["oklch(15% 0.07 310)", "oklch(26% 0.12 310)", "oklch(38% 0.17 310)", "oklch(50% 0.21 310)", "oklch(62% 0.22 310)", "oklch(74% 0.15 310)", "oklch(86% 0.08 310)", "oklch(95% 0.03 310)"] },
+      "category-office": { "role": "category", "displayName": "Office (system teal)", "canonical": "Color.teal", "appearances": { "light": "#30B0C7", "dark": "#40C8E0" }, "symbol": "paperclip", "tonalRamp": ["oklch(15% 0.04 215)", "oklch(26% 0.07 215)", "oklch(38% 0.09 215)", "oklch(50% 0.11 215)", "oklch(62% 0.12 215)", "oklch(74% 0.11 215)", "oklch(86% 0.07 215)", "oklch(95% 0.03 215)"] },
+      "category-software": { "role": "category", "displayName": "Software (system mint)", "canonical": "Color.mint", "appearances": { "light": "#00C7BE", "dark": "#63E6E2" }, "symbol": "app.badge", "tonalRamp": ["oklch(15% 0.04 185)", "oklch(26% 0.07 185)", "oklch(38% 0.09 185)", "oklch(50% 0.11 185)", "oklch(62% 0.13 185)", "oklch(74% 0.12 185)", "oklch(86% 0.08 185)", "oklch(95% 0.03 185)"] },
+      "category-equipment": { "role": "category", "displayName": "Equipment (system cyan)", "canonical": "Color.cyan", "appearances": { "light": "#32ADE6", "dark": "#64D2FF" }, "symbol": "desktopcomputer", "tonalRamp": ["oklch(15% 0.05 235)", "oklch(26% 0.08 235)", "oklch(38% 0.11 235)", "oklch(50% 0.13 235)", "oklch(62% 0.14 235)", "oklch(74% 0.12 235)", "oklch(86% 0.07 235)", "oklch(95% 0.03 235)"] },
+      "category-telecom": { "role": "category", "displayName": "Telecom (system green)", "canonical": "Color.green", "appearances": { "light": "#34C759", "dark": "#30D158" }, "symbol": "antenna.radiowaves.left.and.right", "tonalRamp": ["oklch(15% 0.06 150)", "oklch(26% 0.10 150)", "oklch(38% 0.14 150)", "oklch(50% 0.17 150)", "oklch(62% 0.20 150)", "oklch(74% 0.18 150)", "oklch(86% 0.10 150)", "oklch(95% 0.04 150)"] },
+      "category-services": { "role": "category", "displayName": "Professional services (system pink)", "canonical": "Color.pink", "appearances": { "light": "#FF2D55", "dark": "#FF375F" }, "symbol": "briefcase.fill", "tonalRamp": ["oklch(15% 0.08 10)", "oklch(26% 0.13 10)", "oklch(38% 0.18 10)", "oklch(50% 0.22 10)", "oklch(62% 0.24 10)", "oklch(74% 0.16 10)", "oklch(86% 0.09 10)", "oklch(95% 0.03 10)"] },
+      "category-other": { "role": "category", "displayName": "Other (system gray)", "canonical": "Color.gray", "appearances": { "light": "#8E8E93", "dark": "#8E8E93" }, "symbol": "tag.fill", "tonalRamp": ["oklch(15% 0.005 285)", "oklch(26% 0.005 285)", "oklch(38% 0.005 285)", "oklch(50% 0.005 285)", "oklch(62% 0.005 285)", "oklch(74% 0.005 285)", "oklch(86% 0.005 285)", "oklch(95% 0.005 285)"] },
+      "destructive": { "role": "semantic", "displayName": "Destructive (system red)", "canonical": "role: .destructive / Color.red", "appearances": { "light": "#FF3B30", "dark": "#FF453A" }, "tonalRamp": ["oklch(15% 0.08 28)", "oklch(26% 0.13 28)", "oklch(38% 0.18 28)", "oklch(50% 0.22 28)", "oklch(62% 0.24 28)", "oklch(74% 0.16 28)", "oklch(86% 0.09 28)", "oklch(95% 0.03 28)"] }
+    },
+    "typographyMeta": {
+      "large-title": { "displayName": "Large Title", "purpose": "Top-level 'Expenses' title only; collapses to inline on scroll. Sheets use inline titles.", "swift": ".navigationTitle + default large display mode" },
+      "pocket-total": { "displayName": "Pocket Total", "purpose": "Month total in the section header; the largest figure on screen.", "swift": ".font(.title2.weight(.semibold)).monospacedDigit()" },
+      "add-glyph": { "displayName": "Add Glyph", "purpose": "The plus symbol inside the glass button.", "swift": ".font(.title3.weight(.semibold))" },
+      "headline": { "displayName": "Headline", "purpose": "Month name in the pocket tab, never uppercased (.textCase(nil)).", "swift": ".font(.headline)" },
+      "body": { "displayName": "Body", "purpose": "Merchant in a row; Form fields; Export month name.", "swift": ".font(.body)" },
+      "amount": { "displayName": "Amount", "purpose": "Row amount and amount/VAT text fields, trailing-aligned.", "swift": ".font(.body).monospacedDigit()" },
+      "status-title": { "displayName": "Status Title", "purpose": "First line of each extraction state.", "swift": ".font(.subheadline.weight(.medium))" },
+      "footnote": { "displayName": "Footnote", "purpose": "Category + date, receipt count, status explanations, Export subtitles.", "swift": ".font(.footnote).foregroundStyle(.secondary)" },
+      "footnote-action": { "displayName": "Footnote Action", "purpose": "Inline 'Open Settings' / 'Try Again' buttons in a status label.", "swift": ".font(.footnote.weight(.semibold))" },
+      "badge": { "displayName": "Badge", "purpose": "Enlarge glyph on the receipt hero.", "swift": ".font(.caption.weight(.semibold))" },
+      "glyph-inline": { "displayName": "Inline Glyph", "purpose": "Category SF Symbol beside the footnote meta line.", "swift": ".font(.caption2)" }
+    },
+    "shadows": [],
+    "materials": [
+      { "name": "glass-prominent", "value": ".buttonStyle(.glassProminent)", "purpose": "The single primary + button in the bottom toolbar; system Liquid Glass tinted Kraft." },
+      { "name": "thin-material", "value": ".background(.thinMaterial, in: RoundedRectangle(cornerRadius: 6, style: .continuous))", "purpose": "Enlarge badge on the receipt hero." },
+      { "name": "inset-grouped", "value": ".listStyle(.insetGrouped) / Form", "purpose": "Every list and form surface; supplies grouped background and cell colors." }
+    ],
+    "motion": [
+      { "name": "slip-insert", "value": ".spring(duration: 0.45)", "purpose": "List animation keyed to expenses.count when a slip lands; nil under Reduce Motion." },
+      { "name": "slip-delete", "value": ".spring(duration: 0.4)", "purpose": "withAnimation around modelContext.delete; nil under Reduce Motion." },
+      { "name": "form-prefill", "value": ".default", "purpose": "withAnimation around applying extraction results; nil under Reduce Motion." },
+      { "name": "pocket-total", "value": ".contentTransition(.numericText()) + .animation(.default, value: totalText)", "purpose": "Month total rolls to its new value. Not gated on Reduce Motion in the shipped code." },
+      { "name": "viewer-zoom", "value": "withAnimation (default) on double-tap; scale 1x-4x by pinch, 2.5x by double-tap", "purpose": "Receipt viewer." }
+    ],
+    "breakpoints": [],
+    "spacingMeta": {
+      "hairline": "Month name over receipt count in the pocket tab; Export title over subtitle; status title over explanation (reading, filled).",
+      "tight": "Merchant over meta line inside a row.",
+      "xs": "Pocket tab vertical padding; status title over explanation (noKey, failed).",
+      "badge": "Enlarge badge internal padding; 5pt sits between category glyph, name, dot, and date.",
+      "sm": "Minimum spacer before a row amount; enlarge badge inset from the hero corner; Settings footer stack.",
+      "md": "Row HStack spacing between thumbnail, text, and amount.",
+      "target": "Thumbnail square, share button frame, ProgressView frame, minimum touch target."
+    }
+  },
+  "components": [
+    {
+      "name": "Add Button (Glass Prominent)",
+      "kind": "button",
+      "refersTo": "add-button",
+      "description": "The one primary action: a circular Liquid Glass button in the Kraft tint with an icon-only plus, bottom-trailing in the iOS 26 bottom toolbar.",
+      "html": "<button class=\"ds-add-button\" aria-label=\"Add expense\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 20 20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" stroke-linecap=\"round\"><path d=\"M10 3.5v13M3.5 10h13\"/></svg></button>",
+      "css": ".ds-add-button { width: 44px; height: 44px; border-radius: 50%; border: none; background: linear-gradient(180deg, rgba(255,255,255,0.28), rgba(255,255,255,0) 55%), #A65C1A; color: #fff; display: inline-flex; align-items: center; justify-content: center; backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.35); cursor: pointer; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.2s; } .ds-add-button:hover { filter: brightness(1.06); } .ds-add-button:active { transform: scale(0.94); } .ds-add-button:focus-visible { outline: 3px solid rgba(166, 92, 26, 0.45); outline-offset: 3px; } @media (prefers-color-scheme: dark) { .ds-add-button { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 55%), #D98B45; } }"
+    },
+    {
+      "name": "Slip Row",
+      "kind": "card",
+      "refersTo": "row-amount",
+      "description": "One expense in a pocket: 44pt receipt thumbnail (radius 8), merchant over category glyph + name + date, amount trailing in monospaced digits.",
+      "html": "<div class=\"ds-slip\" role=\"button\" tabindex=\"0\"><div class=\"ds-slip-thumb ds-slip-thumb--placeholder\" style=\"--cat: #FF3B30\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"><path d=\"M6 3v7a3 3 0 0 0 3 3v8M9 3v7M12 3v7M17 3c-1.5 0-3 2.5-3 6 0 2 1 3 2 3v9\"/></svg></div><div class=\"ds-slip-text\"><div class=\"ds-slip-merchant\">Café des Arts</div><div class=\"ds-slip-meta\"><span class=\"ds-slip-glyph\" style=\"--cat: #FF3B30\"><svg width=\"11\" height=\"11\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"><path d=\"M6 3v7a3 3 0 0 0 3 3v8M9 3v7M12 3v7M17 3c-1.5 0-3 2.5-3 6 0 2 1 3 2 3v9\"/></svg></span><span>Meals</span><span>·</span><span>24 Sep</span></div></div><div class=\"ds-slip-amount\">14,80 €</div></div>",
+      "css": ".ds-slip { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #fff; color: #000; font-family: -apple-system, 'SF Pro', system-ui, sans-serif; font-size: 17px; border-radius: 10px; cursor: pointer; transition: background 0.15s; } .ds-slip:hover { background: #F2F2F7; } .ds-slip:active { background: #E5E5EA; } .ds-slip:focus-visible { outline: 2px solid #A65C1A; outline-offset: 2px; } .ds-slip-thumb { width: 44px; height: 44px; flex: none; border-radius: 8px; object-fit: cover; display: inline-flex; align-items: center; justify-content: center; } .ds-slip-thumb--placeholder { background: color-mix(in srgb, var(--cat) 15%, transparent); color: var(--cat); } .ds-slip-text { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px; } .ds-slip-merchant { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-slip-meta { display: flex; align-items: center; gap: 5px; font-size: 13px; color: rgba(60, 60, 67, 0.6); white-space: nowrap; } .ds-slip-glyph { color: var(--cat); display: inline-flex; } .ds-slip-amount { flex: none; margin-left: 8px; font-variant-numeric: tabular-nums; } @media (prefers-color-scheme: dark) { .ds-slip { background: #1C1C1E; color: #fff; } .ds-slip:hover { background: #2C2C2E; } .ds-slip-meta { color: rgba(235, 235, 245, 0.6); } }"
+    },
+    {
+      "name": "Pocket Tab (Month Header)",
+      "kind": "nav",
+      "refersTo": "month-header-total",
+      "description": "Section header: month name (headline) over receipt count (footnote) leading, total in title2 semibold monospaced digits trailing, aligned on the first baseline.",
+      "html": "<div class=\"ds-pocket-tab\"><div class=\"ds-pocket-lead\"><div class=\"ds-pocket-month\">September 2026</div><div class=\"ds-pocket-count\">12 receipts</div></div><div class=\"ds-pocket-total\">1 245,30 €</div></div>",
+      "css": ".ds-pocket-tab { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 16px; font-family: -apple-system, 'SF Pro', system-ui, sans-serif; color: #000; background: #F2F2F7; } .ds-pocket-lead { display: flex; flex-direction: column; gap: 2px; } .ds-pocket-month { font-size: 17px; font-weight: 600; text-transform: none; } .ds-pocket-count { font-size: 13px; color: rgba(60, 60, 67, 0.6); } .ds-pocket-total { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; } @media (prefers-color-scheme: dark) { .ds-pocket-tab { color: #fff; background: #000; } .ds-pocket-count { color: rgba(235, 235, 245, 0.6); } }"
+    },
+    {
+      "name": "Receipt Hero",
+      "kind": "card",
+      "refersTo": "receipt-hero",
+      "description": "Full-width 180pt receipt photo with 12pt continuous corners and a thin-material enlarge badge bottom-trailing; taps open a black full-screen zoomable viewer.",
+      "html": "<button class=\"ds-receipt-hero\" aria-label=\"Receipt photo, tap to enlarge\"><div class=\"ds-receipt-hero-img\"></div><span class=\"ds-receipt-hero-badge\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 10V4h6M20 14v6h-6M4 4l7 7M20 20l-7-7\"/></svg></span></button>",
+      "css": ".ds-receipt-hero { position: relative; display: block; width: 100%; height: 180px; padding: 0; border: none; border-radius: 12px; overflow: hidden; background: #F2F2F7; cursor: zoom-in; } .ds-receipt-hero-img { position: absolute; inset: 0; background: linear-gradient(160deg, #F6F0E6, #E6DCCB); } .ds-receipt-hero-badge { position: absolute; right: 8px; bottom: 8px; display: inline-flex; padding: 6px; border-radius: 6px; background: rgba(255,255,255,0.6); backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3); color: #000; font-size: 12px; font-weight: 600; } .ds-receipt-hero:focus-visible { outline: 3px solid rgba(166, 92, 26, 0.45); outline-offset: 2px; } .ds-receipt-hero:hover .ds-receipt-hero-badge { background: rgba(255,255,255,0.8); } @media (prefers-color-scheme: dark) { .ds-receipt-hero-badge { background: rgba(28,28,30,0.6); color: #fff; } }"
+    },
+    {
+      "name": "Extraction Status (pre-filled)",
+      "kind": "custom",
+      "refersTo": "row-meta",
+      "description": "One of five extraction states rendered as a Label: glyph leading, a medium subheadline title over secondary footnote copy. The pre-filled state uses a Kraft sparkles glyph; no-key uses key.slash; reading uses a spinner; failed uses a warning triangle with a Try Again action.",
+      "html": "<div class=\"ds-status\"><span class=\"ds-status-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2zM5 15l.9 2.1L8 18l-2.1.9L5 21l-.9-2.1L2 18l2.1-.9L5 15zm14 1l.7 1.6 1.6.7-1.6.7L19 21l-.7-1.6-1.6-.7 1.6-.7L19 16z\"/></svg></span><div class=\"ds-status-text\"><div class=\"ds-status-title\">4 fields pre-filled</div><div class=\"ds-status-body\">Edit anything that looks wrong.</div></div></div>",
+      "css": ".ds-status { display: flex; align-items: flex-start; gap: 12px; padding: 10px 16px; background: #fff; color: #000; font-family: -apple-system, 'SF Pro', system-ui, sans-serif; border-radius: 10px; } .ds-status-icon { flex: none; display: inline-flex; color: #A65C1A; margin-top: 1px; } .ds-status-text { display: flex; flex-direction: column; gap: 2px; } .ds-status-title { font-size: 15px; font-weight: 500; } .ds-status-body { font-size: 13px; color: rgba(60, 60, 67, 0.6); } .ds-status-action { font-size: 13px; font-weight: 600; color: #A65C1A; background: none; border: none; padding: 0; cursor: pointer; text-align: left; } .ds-status-action:hover { text-decoration: underline; } .ds-status-action:focus-visible { outline: 2px solid #A65C1A; outline-offset: 2px; border-radius: 2px; } @media (prefers-color-scheme: dark) { .ds-status { background: #1C1C1E; color: #fff; } .ds-status-icon, .ds-status-action { color: #D98B45; } .ds-status-body { color: rgba(235, 235, 245, 0.6); } }"
+    },
+    {
+      "name": "Amount Field",
+      "kind": "input",
+      "refersTo": "amount",
+      "description": "LabeledContent row: label leading, a trailing-aligned decimal-pad text field in monospaced digits.",
+      "html": "<label class=\"ds-amount-field\"><span class=\"ds-amount-label\">Total incl. VAT</span><input class=\"ds-amount-input\" type=\"text\" inputmode=\"decimal\" placeholder=\"0.00\" value=\"14,80\"></label>",
+      "css": ".ds-amount-field { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 16px; background: #fff; color: #000; font-family: -apple-system, 'SF Pro', system-ui, sans-serif; font-size: 17px; border-radius: 10px; } .ds-amount-label { flex: none; } .ds-amount-input { flex: 1 1 auto; min-width: 0; border: none; background: transparent; color: inherit; font: inherit; text-align: right; font-variant-numeric: tabular-nums; outline: none; } .ds-amount-input::placeholder { color: rgba(60, 60, 67, 0.3); } .ds-amount-field:focus-within { box-shadow: inset 0 0 0 2px rgba(166, 92, 26, 0.45); } @media (prefers-color-scheme: dark) { .ds-amount-field { background: #1C1C1E; color: #fff; } .ds-amount-input::placeholder { color: rgba(235, 235, 245, 0.3); } }"
+    },
+    {
+      "name": "Toolbar Button",
+      "kind": "button",
+      "refersTo": "large-title",
+      "description": "Borderless system toolbar button with an SF Symbol in the Kraft tint (Export, Settings); text variants Cancel / Save / Done in sheets. Save disables until an amount parses.",
+      "html": "<div class=\"ds-toolbar\"><button class=\"ds-toolbar-btn\" aria-label=\"Export\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M12 3v13M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6\"/></svg></button><button class=\"ds-toolbar-btn\" aria-label=\"Settings\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z\"/></svg></button><button class=\"ds-toolbar-btn ds-toolbar-btn--text\" disabled>Save</button></div>",
+      "css": ".ds-toolbar { display: inline-flex; align-items: center; gap: 4px; font-family: -apple-system, 'SF Pro', system-ui, sans-serif; } .ds-toolbar-btn { min-width: 44px; height: 44px; padding: 0 8px; border: none; background: transparent; color: #A65C1A; font-size: 17px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; transition: opacity 0.15s, background 0.15s; } .ds-toolbar-btn--text { font-weight: 600; } .ds-toolbar-btn:hover { background: rgba(166, 92, 26, 0.08); } .ds-toolbar-btn:active { opacity: 0.5; } .ds-toolbar-btn:disabled { color: rgba(60, 60, 67, 0.3); cursor: default; background: transparent; } .ds-toolbar-btn:focus-visible { outline: 2px solid #A65C1A; outline-offset: 2px; } @media (prefers-color-scheme: dark) { .ds-toolbar-btn { color: #D98B45; } .ds-toolbar-btn:disabled { color: rgba(235, 235, 245, 0.3); } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Kraft Accordion File",
+    "overview": "The app is a paper accordion file with one pocket per month. The month is the container: its tab carries the month name, the receipt count, and the pocket's total set in the largest figure on screen. A receipt is a slip dropped into the current pocket, and every slip carries the same three slots (merchant, category with date, amount). The system refuses the fintech arrangement (hero balance, chart, then a feed) and the bare transaction table; hierarchy is carried by figure size and a shared amount column, never by color.\n\nStructurally the app is stock iOS 26: navigation stack, inset grouped lists, sheets for every sub-task, system pickers, confirmation dialogs, swipe actions, ContentUnavailableView for the empty state, and a Liquid Glass bottom toolbar for the single primary action. Brand lives in the one layer the platform leaves open: a warm kraft tint on system grouped backgrounds, monospaced-digit figures, a short spring when a slip lands, and plain copy. There is no custom navigation, no hand-drawn material, no shadow, and no hex value in Swift source.\n\nThe build is source-derived: it was authored on Windows and no Simulator screenshot exists, so every value below is read from the shipped Swift and asset catalog, not from a render.",
+    "keyCharacteristics": [
+      "One tint (Kraft) for every interactive element; category hues appear on glyphs only.",
+      "Every amount is .monospacedDigit(), right-aligned, on one shared trailing column across headers and rows.",
+      "Hierarchy by figure size: month total (title2 semibold) > row amount (body) > count and date (footnote).",
+      "Continuous-corner radii in three steps (6 / 8 / 12pt) plus the circle; nothing else.",
+      "System text styles throughout; no hard-coded point size anywhere.",
+      "Depth comes from system materials (grouped list insets, .thinMaterial, .glassProminent), never from shadows."
+    ],
+    "rules": [
+      { "name": "The One Tint Rule", "body": "Kraft is the only color that means \"tappable\". If it is not interactive, it is not Kraft; if it is interactive, it is not any other hue.", "section": "colors" },
+      { "name": "The Ten Hues Rule", "body": "Category colors are fixed in code, one system color per category, and appear only on category glyphs and empty-thumbnail placeholders. Never on text, never on backgrounds, never chosen ad hoc.", "section": "colors" },
+      { "name": "The No Hex In Swift Rule", "body": "Literal color values live in the asset catalog. Swift source uses Color.accentColor, semantic colors, and named system colors only.", "section": "colors" },
+      { "name": "The Shared Column Rule", "body": "Every amount is .monospacedDigit() and sits on the trailing edge, so totals in headers and amounts in rows align on one column down the screen.", "section": "typography" },
+      { "name": "The Figure Size Rule", "body": "Hierarchy among numbers is carried by size and weight only (title2 semibold > body > footnote); no amount is ever colored to stand out.", "section": "typography" },
+      { "name": "The System Style Rule", "body": "Text uses system text styles exclusively. A hard-coded point size is a defect.", "section": "typography" },
+      { "name": "The System Material Rule", "body": "Blur and translucency come from .thinMaterial and .glassProminent only; no custom opacity stacks, no .shadow().", "section": "elevation" }
+    ],
+    "dos": [
+      "Do route every interactive tint through the AccentColor asset; never call .tint() or write a hex in Swift.",
+      "Do set every amount with .monospacedDigit() and align it trailing so it lands on the shared column.",
+      "Do keep the month total at .title2.weight(.semibold) as the largest figure on screen; rows stay at .body.",
+      "Do use system text styles and semantic colors (.primary, .secondary, .red via roles) so Dark Mode, Increased Contrast, and Dynamic Type work unaided.",
+      "Do use continuous corners at 6 / 8 / 12pt or the circle; thumbnails are 44pt squares at 8pt.",
+      "Do gate springs and fills on accessibilityReduceMotion (nil animation when set).",
+      "Do keep the current month's pocket first, even when empty, with the \"No receipts yet this month\" line."
+    ],
+    "donts": [
+      "Don't add a shadow, a custom material, or a painted background; depth is inset grouping, .thinMaterial, and .glassProminent only.",
+      "Don't color a category name, an amount, or a background with a category hue; hues go on glyphs and empty-thumbnail placeholders only.",
+      "Don't use orange or brown as a category hue; they collide with Kraft and read as controls.",
+      "Don't hard-code a point size or a font name.",
+      "Don't add a fourth slot to a row (no badges, tags, or secondary amounts on a slip).",
+      "Don't sum totals across currencies; show one total per currency joined with \" + \".",
+      "Don't replace system controls (pickers, date picker, swipe actions, confirmation dialog, share sheet) with bespoke ones."
+    ]
+  }
+}

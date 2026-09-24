@@ -187,7 +187,7 @@ struct ExpenseFormView: View {
                         .font(.footnote.weight(.semibold))
                 }
             } icon: {
-                Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange)
+                Image(systemName: "exclamationmark.triangle").foregroundStyle(.yellow)
             }
         }
     }
